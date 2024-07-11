@@ -63,12 +63,12 @@ static Butter3* butter3_acc[MAX_IMU_DEV_NUM][3];
 
 static void dcm_from_euler(const float rpy[3], float dcm[9])
 {
-    float cosPhi = arm_cos_f32(rpy[0]);
-    float sinPhi = arm_sin_f32(rpy[0]);
-    float cosThe = arm_cos_f32(rpy[1]);
-    float sinThe = arm_sin_f32(rpy[1]);
-    float cosPsi = arm_cos_f32(rpy[2]);
-    float sinPsi = arm_sin_f32(rpy[2]);
+    float cosPhi = csi_cos_f32(rpy[0]);
+    float sinPhi = csi_sin_f32(rpy[0]);
+    float cosThe = csi_cos_f32(rpy[1]);
+    float sinThe = csi_sin_f32(rpy[1]);
+    float cosPsi = csi_cos_f32(rpy[2]);
+    float sinPsi = csi_sin_f32(rpy[2]);
 
     dcm[0] = cosThe * cosPsi;
     dcm[1] = -cosPhi * sinPsi + sinPhi * sinThe * cosPsi;

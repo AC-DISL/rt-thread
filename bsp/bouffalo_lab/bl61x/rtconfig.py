@@ -39,7 +39,7 @@ if PLATFORM == 'gcc':
     OBJCPY  = PREFIX + 'objcopy'
 
     DEVICE  = ' -march=rv32imafcpzpsfoperand_xtheade -mabi=ilp32f -mtune=e907'
-    CFLAGS  = DEVICE + ' -std=gnu99 -fno-jump-tables -fno-common -fms-extensions -ffunction-sections -fdata-sections -fmessage-length=0 -Wall -Wchar-subscripts -Wformat -Wundef -Wuninitialized -Winit-self -Wignored-qualifiers'
+    CFLAGS  = DEVICE + f' -DRT_USING_LEGACY -std=gnu99 -fno-jump-tables -fno-common -fms-extensions -ffunction-sections -fdata-sections -fmessage-length=0 -Wall -Wchar-subscripts -Wformat -Wundef -Wuninitialized -Winit-self -Wignored-qualifiers -I {RTT_ROOT}/components/legacy -I {RTT_ROOT}/components/legacy/dfs -I {RTT_ROOT}/components/dfs/include/ -I {RTT_ROOT}/components/dfs/filesystems/elmfat/ -I {RTT_ROOT}/components/dfs/filesystems/romfs  -I {RTT_ROOT}/applications -I {RTT_ROOT}/bsp/bouffalo_lab/bl61x/applications/lib/mavlink/v2.0/fmt -I {RTT_ROOT}/components/utilities/ulog -I {RTT_ROOT}/bsp/bouffalo_lab/libraries/bl_mcu_sdk/drivers/lhal/include/arch/risc-v/t-head/csi_dsp/include -w'
     CFLAGS += ' -fstrict-volatile-bitfields -fshort-enums -Wno-error=unused-variable -Wno-error=format= -Wno-error=unused-function -Wno-error=implicit-function-declaration -Wno-error=deprecated-declarations -Wno-format'
 
     LINKER_SCRIPTS = r'board/linker_scripts/bl616_flash.ld'

@@ -11,7 +11,7 @@
 #include <rtthread.h>
 
 #include "board.h"
-#include "drv_uart.h"
+//#include "drv_uart.h"
 
 static void system_clock_init(void)
 {

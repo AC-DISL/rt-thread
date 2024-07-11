@@ -2964,7 +2964,7 @@ void FMS_step(void)
         FMS_Y.FMS_Out.ctrl_mode = FMS_ConstB.DataTypeConversion2_p;
         FMS_Y.FMS_Out.u_cmd = FMS_PARAM.CRUISE_SPEED;
         FMS_Y.FMS_Out.r_cmd = rtb_AccToRate_k * rtb_AccToRate_k * 2.0F *
-          arm_sin_f32(rtb_Saturation_k) / fminf(FMS_PARAM.L1, fmaxf(sqrtf
+          csi_sin_f32(rtb_Saturation_k) / fminf(FMS_PARAM.L1, fmaxf(sqrtf
           (rtb_u_h), 0.5F)) * FMS_PARAM.ACC2RATE;
 
         /* Outputs for Atomic SubSystem: '<S2>/FMS_Input' */
@@ -3535,7 +3535,7 @@ void FMS_step(void)
         FMS_Y.FMS_Out.ctrl_mode = FMS_ConstB.DataTypeConversion2_b;
         FMS_Y.FMS_Out.u_cmd = FMS_PARAM.CRUISE_SPEED;
         FMS_Y.FMS_Out.r_cmd = rtb_Saturation_k * rtb_Saturation_k * 2.0F *
-          arm_sin_f32(rtb_u_h) / fminf(FMS_PARAM.L1, fmaxf(sqrtf(rtb_u), 0.5F)) *
+          csi_sin_f32(rtb_u_h) / fminf(FMS_PARAM.L1, fmaxf(sqrtf(rtb_u), 0.5F)) *
           FMS_PARAM.ACC2RATE;
 
         /* Outputs for Atomic SubSystem: '<S2>/FMS_Input' */
@@ -4251,7 +4251,7 @@ void FMS_step(void)
            *  SignalConversion: '<S16>/Signal Copy1'
            *  Trigonometry: '<S64>/Trigonometric Function3'
            */
-          rtb_u_h = arm_cos_f32(-FMS_U.INS_Out.psi);
+          rtb_u_h = csi_cos_f32(-FMS_U.INS_Out.psi);
 
           /* End of Outputs for SubSystem: '<S2>/FMS_Input' */
           rtb_MatrixConcatenate1[0] = rtb_u_h;
@@ -4263,7 +4263,7 @@ void FMS_step(void)
            *  SignalConversion: '<S16>/Signal Copy1'
            *  Trigonometry: '<S64>/Trigonometric Function2'
            */
-          rtb_Saturation_k = arm_sin_f32(-FMS_U.INS_Out.psi);
+          rtb_Saturation_k = csi_sin_f32(-FMS_U.INS_Out.psi);
 
           /* End of Outputs for SubSystem: '<S2>/FMS_Input' */
           rtb_MatrixConcatenate1[1] = rtb_Saturation_k;

@@ -2294,13 +2294,13 @@ void INS_step(void)
     /* Trigonometry: '<S460>/Trigonometric Function3' incorporates:
      *  Trigonometry: '<S460>/Trigonometric Function1'
      */
-    rtb_Memory_m_idx_0 = arm_cos_f32(rtb_dec_rad);
+    rtb_Memory_m_idx_0 = csi_cos_f32(rtb_dec_rad);
     rtb_VectorConcatenate_h[4] = rtb_Memory_m_idx_0;
 
     /* Trigonometry: '<S460>/Trigonometric Function2' incorporates:
      *  Trigonometry: '<S460>/Trigonometric Function'
      */
-    rtb_dec_rad = arm_sin_f32(rtb_dec_rad);
+    rtb_dec_rad = csi_sin_f32(rtb_dec_rad);
 
     /* Gain: '<S460>/Gain' incorporates:
      *  Trigonometry: '<S460>/Trigonometric Function2'
@@ -2737,8 +2737,8 @@ void INS_step(void)
    *  Trigonometry: '<S477>/Cos'
    *  Trigonometry: '<S477>/Cos1'
    */
-  rtb_Saturation_a = INS_U.Rangefinder.distance * arm_cos_f32
-    (INS_DWork.Delay_3_DSTATE) * arm_cos_f32(INS_DWork.Delay_4_DSTATE);
+  rtb_Saturation_a = INS_U.Rangefinder.distance * csi_cos_f32
+    (INS_DWork.Delay_3_DSTATE) * csi_cos_f32(INS_DWork.Delay_4_DSTATE);
 
   /* Update for UnitDelay: '<S479>/Delay Input1' incorporates:
    *  Inport: '<Root>/Rangefinder'
@@ -3193,13 +3193,13 @@ void INS_step(void)
       /* Trigonometry: '<S194>/Trigonometric Function3' incorporates:
        *  Trigonometry: '<S194>/Trigonometric Function1'
        */
-      rtb_Switch_kj_idx_0 = arm_cos_f32(rtb_DiscreteTimeIntegrator_mj);
+      rtb_Switch_kj_idx_0 = csi_cos_f32(rtb_DiscreteTimeIntegrator_mj);
       rtb_VectorConcatenate_i[4] = rtb_Switch_kj_idx_0;
 
       /* Trigonometry: '<S194>/Trigonometric Function2' incorporates:
        *  Trigonometry: '<S194>/Trigonometric Function'
        */
-      rtb_Switch_kj_idx_1 = arm_sin_f32(rtb_DiscreteTimeIntegrator_mj);
+      rtb_Switch_kj_idx_1 = csi_sin_f32(rtb_DiscreteTimeIntegrator_mj);
 
       /* Gain: '<S194>/Gain' incorporates:
        *  Trigonometry: '<S194>/Trigonometric Function2'
@@ -4158,7 +4158,7 @@ void INS_step(void)
   /* Trigonometry: '<S67>/Trigonometric Function2' incorporates:
    *  Trigonometry: '<S67>/Trigonometric Function'
    */
-  rtb_DiscreteTimeIntegrator_mj = arm_sin_f32(rtb_DiscreteTimeIntegrator_b1);
+  rtb_DiscreteTimeIntegrator_mj = csi_sin_f32(rtb_DiscreteTimeIntegrator_b1);
 
   /* Gain: '<S67>/Gain' incorporates:
    *  Trigonometry: '<S67>/Trigonometric Function2'
@@ -4172,7 +4172,7 @@ void INS_step(void)
   /* Trigonometry: '<S67>/Trigonometric Function1' incorporates:
    *  Trigonometry: '<S67>/Trigonometric Function3'
    */
-  rtb_DiscreteTimeIntegrator_mj = arm_cos_f32(rtb_DiscreteTimeIntegrator_b1);
+  rtb_DiscreteTimeIntegrator_mj = csi_cos_f32(rtb_DiscreteTimeIntegrator_b1);
   rtb_VectorConcatenate_er[0] = rtb_DiscreteTimeIntegrator_mj;
 
   /* Trigonometry: '<S67>/Trigonometric Function3' */
@@ -4642,7 +4642,7 @@ void INS_step(void)
    *  Constant: '<S82>/max'
    *  Trigonometry: '<S82>/Trigonometric Function'
    */
-  rtb_DiscreteTimeIntegrator_mj = arm_sin_f32(rtb_Gain1_n_idx_0) *
+  rtb_DiscreteTimeIntegrator_mj = csi_sin_f32(rtb_Gain1_n_idx_0) *
     INS_P.max_Value;
 
   /* MinMax: '<S82>/MinMax' incorporates:
@@ -5747,7 +5747,7 @@ void INS_step(void)
   /* Trigonometry: '<S340>/Trigonometric Function2' incorporates:
    *  Trigonometry: '<S340>/Trigonometric Function'
    */
-  rtb_MathFunction_n = arm_sin_f32(rtb_DiscreteTimeIntegrator_mj);
+  rtb_MathFunction_n = csi_sin_f32(rtb_DiscreteTimeIntegrator_mj);
 
   /* Gain: '<S340>/Gain' incorporates:
    *  Trigonometry: '<S340>/Trigonometric Function2'
@@ -5760,7 +5760,7 @@ void INS_step(void)
   /* Trigonometry: '<S340>/Trigonometric Function1' incorporates:
    *  Trigonometry: '<S340>/Trigonometric Function3'
    */
-  rtb_MathFunction_n = arm_cos_f32(rtb_DiscreteTimeIntegrator_mj);
+  rtb_MathFunction_n = csi_cos_f32(rtb_DiscreteTimeIntegrator_mj);
   rtb_M_OC[0] = rtb_MathFunction_n;
 
   /* Trigonometry: '<S340>/Trigonometric Function3' */

@@ -23,7 +23,7 @@
 #endif                                 /* Plant_COMMON_INCLUDES_ */
 
 #include "Plant_types.h"
-#include "arm_math.h"
+#include "csi_math.h"
 
 /* Macros for accessing real-time model data structure */
 #ifndef rtmGetErrorStatus

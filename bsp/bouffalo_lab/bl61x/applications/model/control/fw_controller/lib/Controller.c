@@ -485,7 +485,7 @@ void Controller_step(void)
    *  Trigonometry: '<S22>/Cos'
    *  Trigonometry: '<S22>/Tan'
    */
-  rtb_Sum_p = tanf(Controller_U.FMS_Out.phi_cmd) * arm_cos_f32
+  rtb_Sum_p = tanf(Controller_U.FMS_Out.phi_cmd) * csi_cos_f32
     (Controller_U.FMS_Out.theta_cmd) * rtb_Sum_p +
     Controller_U.FMS_Out.psi_rate_cmd;
 
@@ -507,22 +507,22 @@ void Controller_step(void)
    *  Trigonometry: '<S10>/Sin1'
    */
   rtb_Add = (rtb_Cos1 - Controller_U.INS_Out.phi) * CONTROL_PARAM.ROLL_P -
-    arm_sin_f32(Controller_U.INS_Out.theta) * rtb_Sum_p;
+    csi_sin_f32(Controller_U.INS_Out.theta) * rtb_Sum_p;
 
   /* Trigonometry: '<S10>/Sin' incorporates:
    *  Inport: '<Root>/INS_Out'
    */
-  rtb_Multiply4 = arm_sin_f32(Controller_U.INS_Out.phi);
+  rtb_Multiply4 = csi_sin_f32(Controller_U.INS_Out.phi);
 
   /* Trigonometry: '<S10>/Cos1' incorporates:
    *  Inport: '<Root>/INS_Out'
    */
-  rtb_Cos1 = arm_cos_f32(Controller_U.INS_Out.theta);
+  rtb_Cos1 = csi_cos_f32(Controller_U.INS_Out.theta);
 
   /* Trigonometry: '<S10>/Cos' incorporates:
    *  Inport: '<Root>/INS_Out'
    */
-  rtb_Cos = arm_cos_f32(Controller_U.INS_Out.phi);
+  rtb_Cos = csi_cos_f32(Controller_U.INS_Out.phi);
 
   /* Sum: '<S10>/Add1' incorporates:
    *  Product: '<S10>/Multiply1'

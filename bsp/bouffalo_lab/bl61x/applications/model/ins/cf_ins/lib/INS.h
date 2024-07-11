@@ -26,7 +26,7 @@
 #include "zero_crossing_types.h"
 #endif                                 /* INS_COMMON_INCLUDES_ */
 
-#include "arm_math.h"
+#include "csi_math.h"
 
 /* Macros for accessing real-time model data structure */
 #ifndef rtmGetErrorStatus

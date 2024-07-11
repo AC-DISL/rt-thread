@@ -772,14 +772,14 @@ void FMS_HoldControl_m(real32_T rtu_FMS_In, real32_T rtu_FMS_In_o, real32_T
    *  Gain: '<S437>/Gain'
    *  Trigonometry: '<S438>/Trigonometric Function3'
    */
-  rtb_VectorConcatenate_bg_tmp_0 = arm_cos_f32(-rtu_FMS_In_f);
+  rtb_VectorConcatenate_bg_tmp_0 = csi_cos_f32(-rtu_FMS_In_f);
   rtb_VectorConcatenate_d4[0] = rtb_VectorConcatenate_bg_tmp_0;
 
   /* Trigonometry: '<S438>/Trigonometric Function' incorporates:
    *  Gain: '<S437>/Gain'
    *  Trigonometry: '<S438>/Trigonometric Function2'
    */
-  rtb_VectorConcatenate_bg_tmp = arm_sin_f32(-rtu_FMS_In_f);
+  rtb_VectorConcatenate_bg_tmp = csi_sin_f32(-rtu_FMS_In_f);
   rtb_VectorConcatenate_d4[1] = rtb_VectorConcatenate_bg_tmp;
 
   /* SignalConversion: '<S438>/ConcatBufferAtVector Concatenate1In3' incorporates:
@@ -4022,7 +4022,7 @@ void FMS_step(void)
    *  Trigonometry: '<S6>/Cos'
    *  Trigonometry: '<S6>/Cos1'
    */
-  rtb_Gain_fj = arm_cos_f32(FMS_U.INS_Out.phi) * arm_cos_f32(FMS_U.INS_Out.theta);
+  rtb_Gain_fj = csi_cos_f32(FMS_U.INS_Out.phi) * csi_cos_f32(FMS_U.INS_Out.theta);
 
   /* Saturate: '<S6>/Saturation' */
   if (rtb_Gain_fj > 1.0F) {
@@ -4975,7 +4975,7 @@ void FMS_step(void)
          *  SignalConversion: '<S29>/Signal Copy1'
          *  Trigonometry: '<S472>/Trigonometric Function3'
          */
-        rtb_MathFunction_f_idx_0 = arm_cos_f32(-FMS_U.INS_Out.psi);
+        rtb_MathFunction_f_idx_0 = csi_cos_f32(-FMS_U.INS_Out.psi);
 
         /* End of Outputs for SubSystem: '<S4>/FMS_Input' */
         rtb_Transpose[0] = rtb_MathFunction_f_idx_0;
@@ -4987,7 +4987,7 @@ void FMS_step(void)
          *  SignalConversion: '<S29>/Signal Copy1'
          *  Trigonometry: '<S472>/Trigonometric Function2'
          */
-        rtb_Gain_fj = arm_sin_f32(-FMS_U.INS_Out.psi);
+        rtb_Gain_fj = csi_sin_f32(-FMS_U.INS_Out.psi);
 
         /* End of Outputs for SubSystem: '<S4>/FMS_Input' */
         rtb_Transpose[1] = rtb_Gain_fj;
@@ -5321,14 +5321,14 @@ void FMS_step(void)
          *  Inport: '<Root>/INS_Out'
          *  SignalConversion: '<S29>/Signal Copy1'
          */
-        rtb_Transpose[0] = arm_cos_f32(-FMS_U.INS_Out.psi);
+        rtb_Transpose[0] = csi_cos_f32(-FMS_U.INS_Out.psi);
 
         /* Trigonometry: '<S384>/Trigonometric Function' incorporates:
          *  Gain: '<S383>/Gain'
          *  Inport: '<Root>/INS_Out'
          *  SignalConversion: '<S29>/Signal Copy1'
          */
-        rtb_Transpose[1] = arm_sin_f32(-FMS_U.INS_Out.psi);
+        rtb_Transpose[1] = csi_sin_f32(-FMS_U.INS_Out.psi);
 
         /* End of Outputs for SubSystem: '<S4>/FMS_Input' */
 
@@ -5344,14 +5344,14 @@ void FMS_step(void)
          *  SignalConversion: '<S29>/Signal Copy1'
          *  Trigonometry: '<S384>/Trigonometric Function2'
          */
-        rtb_Transpose[3] = -arm_sin_f32(-FMS_U.INS_Out.psi);
+        rtb_Transpose[3] = -csi_sin_f32(-FMS_U.INS_Out.psi);
 
         /* Trigonometry: '<S384>/Trigonometric Function3' incorporates:
          *  Gain: '<S383>/Gain'
          *  Inport: '<Root>/INS_Out'
          *  SignalConversion: '<S29>/Signal Copy1'
          */
-        rtb_Transpose[4] = arm_cos_f32(-FMS_U.INS_Out.psi);
+        rtb_Transpose[4] = csi_cos_f32(-FMS_U.INS_Out.psi);
 
         /* End of Outputs for SubSystem: '<S4>/FMS_Input' */
 
@@ -6017,13 +6017,13 @@ void FMS_step(void)
           /* Trigonometry: '<S461>/Trigonometric Function3' incorporates:
            *  Trigonometry: '<S461>/Trigonometric Function1'
            */
-          rtb_MathFunction_f_idx_0 = arm_cos_f32(rtb_Add4_e5);
+          rtb_MathFunction_f_idx_0 = csi_cos_f32(rtb_Add4_e5);
           rtb_Transpose[4] = rtb_MathFunction_f_idx_0;
 
           /* Trigonometry: '<S461>/Trigonometric Function2' incorporates:
            *  Trigonometry: '<S461>/Trigonometric Function'
            */
-          rtb_Gain_fj = arm_sin_f32(rtb_Add4_e5);
+          rtb_Gain_fj = csi_sin_f32(rtb_Add4_e5);
 
           /* Gain: '<S461>/Gain' incorporates:
            *  Trigonometry: '<S461>/Trigonometric Function2'
@@ -6803,7 +6803,7 @@ void FMS_step(void)
          *  Sum: '<S451>/Sum of Elements'
          *  Trigonometry: '<S409>/Sin'
          */
-        rtb_Add4_e5 = arm_sin_f32(rtb_Add3_c) * rtb_Add4_e5 / fminf(FMS_PARAM.L1,
+        rtb_Add4_e5 = csi_sin_f32(rtb_Add3_c) * rtb_Add4_e5 / fminf(FMS_PARAM.L1,
           fmaxf(sqrtf(rtb_Rem_p + rtb_TmpSignalConversionAtDela_a[0]), 0.5F));
 
         /* Sum: '<S400>/Subtract' incorporates:
@@ -7803,7 +7803,7 @@ void FMS_step(void)
            *  Inport: '<Root>/INS_Out'
            *  SignalConversion: '<S29>/Signal Copy1'
            */
-          rtb_Transpose[4] = arm_cos_f32(-FMS_U.INS_Out.psi);
+          rtb_Transpose[4] = csi_cos_f32(-FMS_U.INS_Out.psi);
 
           /* Gain: '<S305>/Gain' incorporates:
            *  Gain: '<S304>/Gain'
@@ -7811,7 +7811,7 @@ void FMS_step(void)
            *  SignalConversion: '<S29>/Signal Copy1'
            *  Trigonometry: '<S305>/Trigonometric Function2'
            */
-          rtb_Transpose[3] = -arm_sin_f32(-FMS_U.INS_Out.psi);
+          rtb_Transpose[3] = -csi_sin_f32(-FMS_U.INS_Out.psi);
 
           /* SignalConversion: '<S305>/ConcatBufferAtVector Concatenate1In3' incorporates:
            *  Constant: '<S305>/Constant3'
@@ -7823,14 +7823,14 @@ void FMS_step(void)
            *  Inport: '<Root>/INS_Out'
            *  SignalConversion: '<S29>/Signal Copy1'
            */
-          rtb_Transpose[1] = arm_sin_f32(-FMS_U.INS_Out.psi);
+          rtb_Transpose[1] = csi_sin_f32(-FMS_U.INS_Out.psi);
 
           /* Trigonometry: '<S305>/Trigonometric Function1' incorporates:
            *  Gain: '<S304>/Gain'
            *  Inport: '<Root>/INS_Out'
            *  SignalConversion: '<S29>/Signal Copy1'
            */
-          rtb_Transpose[0] = arm_cos_f32(-FMS_U.INS_Out.psi);
+          rtb_Transpose[0] = csi_cos_f32(-FMS_U.INS_Out.psi);
 
           /* SignalConversion: '<S305>/ConcatBufferAtVector ConcatenateIn3' */
           rtb_Transpose[6] = FMS_ConstB.VectorConcatenate3_i[0];
@@ -7980,7 +7980,7 @@ void FMS_step(void)
            *  MultiPortSwitch: '<S229>/Index Vector'
            *  SignalConversion: '<S29>/Signal Copy1'
            */
-          rtb_Transpose[4] = arm_cos_f32(-FMS_U.INS_Out.psi);
+          rtb_Transpose[4] = csi_cos_f32(-FMS_U.INS_Out.psi);
 
           /* Gain: '<S239>/Gain' incorporates:
            *  Gain: '<S238>/Gain'
@@ -7989,7 +7989,7 @@ void FMS_step(void)
            *  SignalConversion: '<S29>/Signal Copy1'
            *  Trigonometry: '<S239>/Trigonometric Function2'
            */
-          rtb_Transpose[3] = -arm_sin_f32(-FMS_U.INS_Out.psi);
+          rtb_Transpose[3] = -csi_sin_f32(-FMS_U.INS_Out.psi);
 
           /* SignalConversion: '<S239>/ConcatBufferAtVector Concatenate1In3' incorporates:
            *  Constant: '<S239>/Constant3'
@@ -8003,7 +8003,7 @@ void FMS_step(void)
            *  MultiPortSwitch: '<S229>/Index Vector'
            *  SignalConversion: '<S29>/Signal Copy1'
            */
-          rtb_Transpose[1] = arm_sin_f32(-FMS_U.INS_Out.psi);
+          rtb_Transpose[1] = csi_sin_f32(-FMS_U.INS_Out.psi);
 
           /* Trigonometry: '<S239>/Trigonometric Function1' incorporates:
            *  Gain: '<S238>/Gain'
@@ -8011,7 +8011,7 @@ void FMS_step(void)
            *  MultiPortSwitch: '<S229>/Index Vector'
            *  SignalConversion: '<S29>/Signal Copy1'
            */
-          rtb_Transpose[0] = arm_cos_f32(-FMS_U.INS_Out.psi);
+          rtb_Transpose[0] = csi_cos_f32(-FMS_U.INS_Out.psi);
 
           /* SignalConversion: '<S239>/ConcatBufferAtVector ConcatenateIn3' incorporates:
            *  MultiPortSwitch: '<S229>/Index Vector'
@@ -8083,14 +8083,14 @@ void FMS_step(void)
            *  Gain: '<S307>/Gain'
            *  Trigonometry: '<S309>/Trigonometric Function1'
            */
-          rtb_MathFunction_f_idx_0 = arm_cos_f32(rtb_Add3_c);
+          rtb_MathFunction_f_idx_0 = csi_cos_f32(rtb_Add3_c);
           rtb_Transpose[4] = rtb_MathFunction_f_idx_0;
 
           /* Trigonometry: '<S309>/Trigonometric Function2' incorporates:
            *  Gain: '<S307>/Gain'
            *  Trigonometry: '<S309>/Trigonometric Function'
            */
-          rtb_Gain_fj = arm_sin_f32(rtb_Add3_c);
+          rtb_Gain_fj = csi_sin_f32(rtb_Add3_c);
 
           /* Gain: '<S309>/Gain' incorporates:
            *  Trigonometry: '<S309>/Trigonometric Function2'
@@ -8136,7 +8136,7 @@ void FMS_step(void)
            *  SignalConversion: '<S29>/TmpSignal ConversionAtSignal Copy3Inport1'
            *  Trigonometry: '<S308>/Trigonometric Function1'
            */
-          rtb_DiscreteTimeIntegrator_n = arm_cos_f32
+          rtb_DiscreteTimeIntegrator_n = csi_cos_f32
             (-FMS_B.Cmd_In.offboard_psi_0);
           rtb_VectorConcatenate_e[4] = rtb_DiscreteTimeIntegrator_n;
 
@@ -8145,7 +8145,7 @@ void FMS_step(void)
            *  SignalConversion: '<S29>/TmpSignal ConversionAtSignal Copy3Inport1'
            *  Trigonometry: '<S308>/Trigonometric Function'
            */
-          rtb_Divide_l_idx_1 = arm_sin_f32(-FMS_B.Cmd_In.offboard_psi_0);
+          rtb_Divide_l_idx_1 = csi_sin_f32(-FMS_B.Cmd_In.offboard_psi_0);
 
           /* Gain: '<S308>/Gain' incorporates:
            *  Trigonometry: '<S308>/Trigonometric Function2'
@@ -8278,13 +8278,13 @@ void FMS_step(void)
           /* Trigonometry: '<S241>/Trigonometric Function3' incorporates:
            *  MultiPortSwitch: '<S229>/Index Vector'
            */
-          rtb_Transpose[4] = arm_cos_f32(rtb_Add3_c);
+          rtb_Transpose[4] = csi_cos_f32(rtb_Add3_c);
 
           /* Gain: '<S241>/Gain' incorporates:
            *  MultiPortSwitch: '<S229>/Index Vector'
            *  Trigonometry: '<S241>/Trigonometric Function2'
            */
-          rtb_Transpose[3] = -arm_sin_f32(rtb_Add3_c);
+          rtb_Transpose[3] = -csi_sin_f32(rtb_Add3_c);
 
           /* SignalConversion: '<S241>/ConcatBufferAtVector Concatenate1In3' incorporates:
            *  Constant: '<S241>/Constant3'
@@ -8295,12 +8295,12 @@ void FMS_step(void)
           /* Trigonometry: '<S241>/Trigonometric Function' incorporates:
            *  MultiPortSwitch: '<S229>/Index Vector'
            */
-          rtb_Transpose[1] = arm_sin_f32(rtb_Add3_c);
+          rtb_Transpose[1] = csi_sin_f32(rtb_Add3_c);
 
           /* Trigonometry: '<S241>/Trigonometric Function1' incorporates:
            *  MultiPortSwitch: '<S229>/Index Vector'
            */
-          rtb_Transpose[0] = arm_cos_f32(rtb_Add3_c);
+          rtb_Transpose[0] = csi_cos_f32(rtb_Add3_c);
 
           /* SignalConversion: '<S241>/ConcatBufferAtVector ConcatenateIn3' incorporates:
            *  MultiPortSwitch: '<S229>/Index Vector'
@@ -8368,7 +8368,7 @@ void FMS_step(void)
            *  Inport: '<Root>/INS_Out'
            *  SignalConversion: '<S29>/Signal Copy1'
            */
-          rtb_Transpose[4] = arm_cos_f32(-FMS_U.INS_Out.psi);
+          rtb_Transpose[4] = csi_cos_f32(-FMS_U.INS_Out.psi);
 
           /* Gain: '<S301>/Gain' incorporates:
            *  Gain: '<S300>/Gain'
@@ -8376,7 +8376,7 @@ void FMS_step(void)
            *  SignalConversion: '<S29>/Signal Copy1'
            *  Trigonometry: '<S301>/Trigonometric Function2'
            */
-          rtb_Transpose[3] = -arm_sin_f32(-FMS_U.INS_Out.psi);
+          rtb_Transpose[3] = -csi_sin_f32(-FMS_U.INS_Out.psi);
 
           /* SignalConversion: '<S301>/ConcatBufferAtVector Concatenate1In3' incorporates:
            *  Constant: '<S301>/Constant3'
@@ -8388,14 +8388,14 @@ void FMS_step(void)
            *  Inport: '<Root>/INS_Out'
            *  SignalConversion: '<S29>/Signal Copy1'
            */
-          rtb_Transpose[1] = arm_sin_f32(-FMS_U.INS_Out.psi);
+          rtb_Transpose[1] = csi_sin_f32(-FMS_U.INS_Out.psi);
 
           /* Trigonometry: '<S301>/Trigonometric Function1' incorporates:
            *  Gain: '<S300>/Gain'
            *  Inport: '<Root>/INS_Out'
            *  SignalConversion: '<S29>/Signal Copy1'
            */
-          rtb_Transpose[0] = arm_cos_f32(-FMS_U.INS_Out.psi);
+          rtb_Transpose[0] = csi_cos_f32(-FMS_U.INS_Out.psi);
 
           /* S-Function (sfix_bitop): '<S310>/lat_cmd valid' incorporates:
            *  S-Function (sfix_bitop): '<S295>/lat_cmd valid'
@@ -8636,7 +8636,7 @@ void FMS_step(void)
            *  Inport: '<Root>/INS_Out'
            *  SignalConversion: '<S29>/Signal Copy1'
            */
-          rtb_Transpose[4] = arm_cos_f32(-FMS_U.INS_Out.psi);
+          rtb_Transpose[4] = csi_cos_f32(-FMS_U.INS_Out.psi);
 
           /* Gain: '<S330>/Gain' incorporates:
            *  Gain: '<S329>/Gain'
@@ -8644,7 +8644,7 @@ void FMS_step(void)
            *  SignalConversion: '<S29>/Signal Copy1'
            *  Trigonometry: '<S330>/Trigonometric Function2'
            */
-          rtb_Transpose[3] = -arm_sin_f32(-FMS_U.INS_Out.psi);
+          rtb_Transpose[3] = -csi_sin_f32(-FMS_U.INS_Out.psi);
 
           /* SignalConversion: '<S330>/ConcatBufferAtVector Concatenate1In3' incorporates:
            *  Constant: '<S330>/Constant3'
@@ -8656,14 +8656,14 @@ void FMS_step(void)
            *  Inport: '<Root>/INS_Out'
            *  SignalConversion: '<S29>/Signal Copy1'
            */
-          rtb_Transpose[1] = arm_sin_f32(-FMS_U.INS_Out.psi);
+          rtb_Transpose[1] = csi_sin_f32(-FMS_U.INS_Out.psi);
 
           /* Trigonometry: '<S330>/Trigonometric Function1' incorporates:
            *  Gain: '<S329>/Gain'
            *  Inport: '<Root>/INS_Out'
            *  SignalConversion: '<S29>/Signal Copy1'
            */
-          rtb_Transpose[0] = arm_cos_f32(-FMS_U.INS_Out.psi);
+          rtb_Transpose[0] = csi_cos_f32(-FMS_U.INS_Out.psi);
 
           /* SignalConversion: '<S330>/ConcatBufferAtVector ConcatenateIn3' */
           rtb_Transpose[6] = FMS_ConstB.VectorConcatenate3_l[0];
@@ -8723,13 +8723,13 @@ void FMS_step(void)
           /* Trigonometry: '<S332>/Trigonometric Function3' incorporates:
            *  Gain: '<S331>/Gain'
            */
-          rtb_Transpose[4] = arm_cos_f32(rtb_DiscreteTimeIntegrator_n);
+          rtb_Transpose[4] = csi_cos_f32(rtb_DiscreteTimeIntegrator_n);
 
           /* Gain: '<S332>/Gain' incorporates:
            *  Gain: '<S331>/Gain'
            *  Trigonometry: '<S332>/Trigonometric Function2'
            */
-          rtb_Transpose[3] = -arm_sin_f32(rtb_DiscreteTimeIntegrator_n);
+          rtb_Transpose[3] = -csi_sin_f32(rtb_DiscreteTimeIntegrator_n);
 
           /* SignalConversion: '<S332>/ConcatBufferAtVector Concatenate1In3' incorporates:
            *  Constant: '<S332>/Constant3'
@@ -8739,12 +8739,12 @@ void FMS_step(void)
           /* Trigonometry: '<S332>/Trigonometric Function' incorporates:
            *  Gain: '<S331>/Gain'
            */
-          rtb_Transpose[1] = arm_sin_f32(rtb_DiscreteTimeIntegrator_n);
+          rtb_Transpose[1] = csi_sin_f32(rtb_DiscreteTimeIntegrator_n);
 
           /* Trigonometry: '<S332>/Trigonometric Function1' incorporates:
            *  Gain: '<S331>/Gain'
            */
-          rtb_Transpose[0] = arm_cos_f32(rtb_DiscreteTimeIntegrator_n);
+          rtb_Transpose[0] = csi_cos_f32(rtb_DiscreteTimeIntegrator_n);
 
           /* SignalConversion: '<S332>/ConcatBufferAtVector ConcatenateIn3' */
           rtb_Transpose[6] = FMS_ConstB.VectorConcatenate3_iz[0];
@@ -9546,12 +9546,12 @@ void FMS_step(void)
           /* End of Outputs for SubSystem: '<S4>/FMS_Input' */
 
           /* Trigonometry: '<S227>/Trigonometric Function3' */
-          rtb_Transpose[4] = arm_cos_f32(rtb_Add4_e5);
+          rtb_Transpose[4] = csi_cos_f32(rtb_Add4_e5);
 
           /* Gain: '<S227>/Gain' incorporates:
            *  Trigonometry: '<S227>/Trigonometric Function2'
            */
-          rtb_Transpose[3] = -arm_sin_f32(rtb_Add4_e5);
+          rtb_Transpose[3] = -csi_sin_f32(rtb_Add4_e5);
 
           /* SignalConversion: '<S227>/ConcatBufferAtVector Concatenate1In3' incorporates:
            *  Constant: '<S227>/Constant3'
@@ -9559,10 +9559,10 @@ void FMS_step(void)
           rtb_Transpose[2] = 0.0F;
 
           /* Trigonometry: '<S227>/Trigonometric Function' */
-          rtb_Transpose[1] = arm_sin_f32(rtb_Add4_e5);
+          rtb_Transpose[1] = csi_sin_f32(rtb_Add4_e5);
 
           /* Trigonometry: '<S227>/Trigonometric Function1' */
-          rtb_Transpose[0] = arm_cos_f32(rtb_Add4_e5);
+          rtb_Transpose[0] = csi_cos_f32(rtb_Add4_e5);
 
           /* Switch: '<S183>/Switch2' incorporates:
            *  Constant: '<S172>/Constant2'
@@ -10347,7 +10347,7 @@ void FMS_step(void)
          *  Sum: '<S217>/Sum of Elements'
          *  Trigonometry: '<S175>/Sin'
          */
-        rtb_MathFunction_f_idx_2 = arm_sin_f32(rtb_Divide_l_idx_1) * rtb_Gain_fj
+        rtb_MathFunction_f_idx_2 = csi_sin_f32(rtb_Divide_l_idx_1) * rtb_Gain_fj
           / fminf(FMS_PARAM.L1, fmaxf(sqrtf(rtb_Add4_e5 + rtb_Add3_c), 0.5F));
 
         /* Sum: '<S166>/Subtract' incorporates:

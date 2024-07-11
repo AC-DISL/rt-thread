@@ -320,7 +320,7 @@ static inline void xfree(const void* x)
 }
 
 enum tokentype_t {
-    INVALID,
+    INVALID0,
     DOT,
     COMMA,
     EQUAL,

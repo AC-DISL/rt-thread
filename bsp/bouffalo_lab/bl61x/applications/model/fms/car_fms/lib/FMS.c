@@ -2711,7 +2711,7 @@ void FMS_step(void)
         FMS_Y.FMS_Out.state = FMS_ConstB.DataTypeConversion1_m0;
         FMS_Y.FMS_Out.ctrl_mode = FMS_ConstB.DataTypeConversion2_p;
         FMS_Y.FMS_Out.u_cmd = FMS_PARAM.CRUISE_SPEED;
-        FMS_Y.FMS_Out.r_cmd = arm_sin_f32(rtb_Saturation_gm) * rtb_Gain / fminf
+        FMS_Y.FMS_Out.r_cmd = csi_sin_f32(rtb_Saturation_gm) * rtb_Gain / fminf
           (FMS_PARAM.L1, fmaxf(sqrtf(rtb_P_i_idx_0 + rtb_MathFunction_k[0]),
             0.5F)) * FMS_PARAM.ACC2RATE;
 
@@ -3296,7 +3296,7 @@ void FMS_step(void)
         FMS_Y.FMS_Out.state = FMS_ConstB.DataTypeConversion1_b;
         FMS_Y.FMS_Out.ctrl_mode = FMS_ConstB.DataTypeConversion2_b;
         FMS_Y.FMS_Out.u_cmd = FMS_PARAM.CRUISE_SPEED;
-        FMS_Y.FMS_Out.r_cmd = arm_sin_f32(rtb_P_i_idx_0) * rtb_Switch_f_idx_1 /
+        FMS_Y.FMS_Out.r_cmd = csi_sin_f32(rtb_P_i_idx_0) * rtb_Switch_f_idx_1 /
           fminf(FMS_PARAM.L1, fmaxf(sqrtf(rtb_Gain + rtb_Gain_n), 0.5F)) *
           FMS_PARAM.ACC2RATE;
 
@@ -3613,8 +3613,8 @@ void FMS_step(void)
            */
           if (FMS_DW.icLoad != 0) {
             /* Outputs for Atomic SubSystem: '<S2>/FMS_Input' */
-            FMS_DW.start_vel_DSTATE[0] = arm_cos_f32(FMS_U.INS_Out.psi);
-            FMS_DW.start_vel_DSTATE[1] = arm_sin_f32(FMS_U.INS_Out.psi);
+            FMS_DW.start_vel_DSTATE[0] = csi_cos_f32(FMS_U.INS_Out.psi);
+            FMS_DW.start_vel_DSTATE[1] = csi_sin_f32(FMS_U.INS_Out.psi);
 
             /* End of Outputs for SubSystem: '<S2>/FMS_Input' */
           }
@@ -4067,7 +4067,7 @@ void FMS_step(void)
            *  Sum: '<S74>/Sum of Elements'
            *  Trigonometry: '<S71>/Sin'
            */
-          FMS_B.Merge = 2.0F * rtb_Switch_f_idx_1 * arm_sin_f32(rtb_P_i_idx_0) /
+          FMS_B.Merge = 2.0F * rtb_Switch_f_idx_1 * csi_sin_f32(rtb_P_i_idx_0) /
             fminf(FMS_PARAM.L1, fmaxf(sqrtf(rtb_Gain + rtb_MathFunction_k[0]),
                    0.5F)) * FMS_PARAM.ACC2RATE;
 

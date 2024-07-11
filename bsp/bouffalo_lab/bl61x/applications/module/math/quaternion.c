@@ -15,7 +15,7 @@
  *****************************************************************************/
 
 #include <firmament.h>
-#include <math.h>
+#include <csi_math.h>
 
 #include "module/math/ap_math.h"
 #include "module/math/quaternion.h"
@@ -98,11 +98,11 @@ void quaternion_conjugate(const quaternion* q, quaternion* res)
 void quaternion_create(quaternion* q, float theta, float axis[3])
 {
     float half_theta = 0.5f * theta;
-    float sin_half_theta = arm_sin_f32(half_theta);
+    float sin_half_theta = csi_sin_f32(half_theta);
 
     Vector3_Normalize(axis, axis);
 
-    q->w = arm_cos_f32(half_theta);
+    q->w = csi_cos_f32(half_theta);
     q->x = axis[0] * sin_half_theta;
     q->y = axis[1] * sin_half_theta;
     q->z = axis[2] * sin_half_theta;
@@ -134,9 +134,9 @@ void quaternion_fromTwoVectorRotation(quaternion* result, const float from[3], c
     Vector3_Normalize(n, n);
 
     //sin_half_theta = sin(theta*0.5);
-    sin_half_theta = arm_sin_f32(theta * 0.5f);
+    sin_half_theta = csi_sin_f32(theta * 0.5f);
     //result->w = cos(theta*0.5);
-    result->w = arm_cos_f32(theta * 0.5f);
+    result->w = csi_cos_f32(theta * 0.5f);
     result->x = n[0] * sin_half_theta;
     result->y = n[1] * sin_half_theta;
     result->z = n[2] * sin_half_theta;
@@ -175,12 +175,12 @@ void quaternion_fromEuler(const Euler e, quaternion* q)
     //	double sp = sin(e.pitch * 0.5);
     //	double cy = cos(e.yaw * 0.5);
     //	double sy = sin(e.yaw * 0.5);
-    float cr = arm_cos_f32(e.roll * 0.5f);
-    float sr = arm_sin_f32(e.roll * 0.5f);
-    float cp = arm_cos_f32(e.pitch * 0.5f);
-    float sp = arm_sin_f32(e.pitch * 0.5f);
-    float cy = arm_cos_f32(e.yaw * 0.5f);
-    float sy = arm_sin_f32(e.yaw * 0.5f);
+    float cr = csi_cos_f32(e.roll * 0.5f);
+    float sr = csi_sin_f32(e.roll * 0.5f);
+    float cp = csi_cos_f32(e.pitch * 0.5f);
+    float sp = csi_sin_f32(e.pitch * 0.5f);
+    float cy = csi_cos_f32(e.yaw * 0.5f);
+    float sy = csi_sin_f32(e.yaw * 0.5f);
 
     q->w = cy * cr * cp + sy * sr * sp;
     q->x = cy * sr * cp - sy * cr * sp;

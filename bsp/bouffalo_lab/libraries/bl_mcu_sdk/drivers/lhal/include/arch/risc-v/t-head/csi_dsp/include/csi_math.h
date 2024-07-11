@@ -3914,8 +3914,8 @@ __STATIC_FORCEINLINE q7_t csi_linear_interp_q7(
  * @param[in] x  input value in radians.
  * @return  sin(x).
  */
-float32_t csi_sin_f32(
-    float32_t x);
+static float32_t csi_sin_f32(
+    float32_t x){return sin(x);}
 
 
 /**
@@ -3941,8 +3941,8 @@ q15_t csi_sin_q15(
  * @param[in] x  input value in radians.
  * @return  cos(x).
  */
-float32_t csi_cos_f32(
-    float32_t x);
+static float32_t csi_cos_f32(
+    float32_t x){return cos(x);}
 
 
 /**

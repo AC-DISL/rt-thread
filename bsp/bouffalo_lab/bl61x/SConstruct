@@ -19,6 +19,22 @@ env = Environment(tools = ['mingw'],
 env.PrependENVPath('PATH', rtconfig.EXEC_PATH)
 env['ASCOM'] = env['ASPPCOM']
 
+AddOption('--vehicle',
+                dest = 'vehicle',
+                type = 'string',
+                default = 'Multicopter',
+                help = 'Specify the vehicle type')
+
+AddOption('--airframe', 
+                dest='airframe', 
+                type='int', 
+                nargs=1, 
+                default = 1, 
+                action='store',
+                help='Specify the airframe value')
+env.Append(CPPDEFINES = [('VEHICLE_TYPE', GetOption('vehicle'))])
+env.Append(CPPDEFINES = [('AIRFRAME', GetOption('airframe'))])
+
 Export('RTT_ROOT')
 Export('rtconfig')
 

@@ -96,7 +96,7 @@ void Controller_step(void)
    *  Inport: '<Root>/INS_Out'
    *  Trigonometry: '<S20>/Trigonometric Function3'
    */
-  rtb_u_err = arm_cos_f32(-Controller_U.INS_Out.psi);
+  rtb_u_err = csi_cos_f32(-Controller_U.INS_Out.psi);
   rtb_VectorConcatenate[0] = rtb_u_err;
 
   /* Trigonometry: '<S20>/Trigonometric Function' incorporates:
@@ -104,7 +104,7 @@ void Controller_step(void)
    *  Inport: '<Root>/INS_Out'
    *  Trigonometry: '<S20>/Trigonometric Function2'
    */
-  rtb_Gain = arm_sin_f32(-Controller_U.INS_Out.psi);
+  rtb_Gain = csi_sin_f32(-Controller_U.INS_Out.psi);
   rtb_VectorConcatenate[1] = rtb_Gain;
 
   /* SignalConversion: '<S20>/ConcatBufferAtVector Concatenate1In3' incorporates:

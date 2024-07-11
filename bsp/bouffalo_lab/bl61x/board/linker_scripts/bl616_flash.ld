@@ -102,6 +102,20 @@ SECTIONS
         . = ALIGN(4);
         __usbh_class_info_end__ = .;
 
+        /* section information for mlog. */
+        . = ALIGN(4);
+        __fmt_mlog_start = .;
+        KEEP(*(MlogTab))
+        __fmt_mlog_end = .;
+        . = ALIGN(4);
+        
+        /* section information for task. */
+        . = ALIGN(4);
+        __fmt_task_start = .;
+        KEEP(*(TaskTab))
+        __fmt_task_end = .;
+        . = ALIGN(4);
+
         /*put .rodata**/
         *(EXCLUDE_FILE( *bl616_glb*.o* \
                         *bl616_pds*.o* \

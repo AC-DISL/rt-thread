@@ -3504,7 +3504,7 @@ void FMS_step(void)
          *  Trigonometry: '<S211>/Sin'
          */
         rtb_Switch2_b = rtb_Saturation1_bl * rtb_Saturation1_bl * 2.0F *
-          arm_sin_f32(rtb_Saturation_fu) / FMS_PARAM.L1;
+          csi_sin_f32(rtb_Saturation_fu) / FMS_PARAM.L1;
 
         /* Saturate: '<S202>/Saturation1' */
         if (rtb_Switch2_b > FMS_PARAM.ACC_Y_LIM) {
@@ -4016,7 +4016,7 @@ void FMS_step(void)
          *  Product: '<S189>/Multiply1'
          *  Trigonometry: '<S189>/Sin'
          */
-        rtb_Switch2_b = rtb_Switch2_b * rtb_Switch2_b * 2.0F * arm_sin_f32
+        rtb_Switch2_b = rtb_Switch2_b * rtb_Switch2_b * 2.0F * csi_sin_f32
           (rtb_Switch_b_idx_2) / FMS_PARAM.L1;
 
         /* Saturate: '<S180>/Saturation1' */
@@ -4586,7 +4586,7 @@ void FMS_step(void)
          *  Product: '<S164>/Multiply1'
          *  Trigonometry: '<S164>/Sin'
          */
-        rtb_Switch2_b = 2.0F * rtb_Switch_b_idx_0 * arm_sin_f32(rtb_Switch2_b) /
+        rtb_Switch2_b = 2.0F * rtb_Switch_b_idx_0 * csi_sin_f32(rtb_Switch2_b) /
           FMS_PARAM.L1;
 
         /* Saturate: '<S159>/Saturation' */
@@ -5174,7 +5174,7 @@ void FMS_step(void)
          *  Product: '<S140>/Multiply1'
          *  Trigonometry: '<S140>/Sin'
          */
-        rtb_Switch2_b = rtb_Switch2_b * rtb_Switch2_b * 2.0F * arm_sin_f32
+        rtb_Switch2_b = rtb_Switch2_b * rtb_Switch2_b * 2.0F * csi_sin_f32
           (rtb_Switch_b_idx_2) / FMS_PARAM.L1;
 
         /* Saturate: '<S131>/Saturation1' */
@@ -5756,7 +5756,7 @@ void FMS_step(void)
          *  SignalConversion: '<S23>/Signal Copy1'
          *  Trigonometry: '<S106>/Trigonometric Function3'
          */
-        rtb_Switch2_b = arm_cos_f32(-FMS_U.INS_Out.psi);
+        rtb_Switch2_b = csi_cos_f32(-FMS_U.INS_Out.psi);
 
         /* End of Outputs for SubSystem: '<S3>/FMS_Input' */
         rtb_VectorConcatenate[0] = rtb_Switch2_b;
@@ -5768,7 +5768,7 @@ void FMS_step(void)
          *  SignalConversion: '<S23>/Signal Copy1'
          *  Trigonometry: '<S106>/Trigonometric Function2'
          */
-        rtb_Switch_b_idx_0 = arm_sin_f32(-FMS_U.INS_Out.psi);
+        rtb_Switch_b_idx_0 = csi_sin_f32(-FMS_U.INS_Out.psi);
 
         /* End of Outputs for SubSystem: '<S3>/FMS_Input' */
         rtb_VectorConcatenate[1] = rtb_Switch_b_idx_0;
@@ -6400,7 +6400,7 @@ void FMS_step(void)
            *  Sum: '<S93>/Sum of Elements'
            *  Trigonometry: '<S90>/Sin'
            */
-          FMS_B.Merge_p = arm_sin_f32(rtb_Switch_b_idx_0) * rtb_Switch_b_idx_1 /
+          FMS_B.Merge_p = csi_sin_f32(rtb_Switch_b_idx_0) * rtb_Switch_b_idx_1 /
             fminf(FMS_PARAM.L1, fmaxf(sqrtf(rtb_Switch2_b + rtb_P_k[0]), 0.5F));
 
           /* Update for Delay: '<S86>/start_vel' */

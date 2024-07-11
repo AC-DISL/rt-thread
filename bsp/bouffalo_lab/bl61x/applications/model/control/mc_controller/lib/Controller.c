@@ -158,7 +158,7 @@ void Controller_step(void)
    *  Inport: '<Root>/INS_Out'
    *  Trigonometry: '<S99>/Trigonometric Function3'
    */
-  rtb_uv_error_C_mPs_idx_0 = arm_cos_f32(-Controller_U.INS_Out.psi);
+  rtb_uv_error_C_mPs_idx_0 = csi_cos_f32(-Controller_U.INS_Out.psi);
   rtb_VectorConcatenate[0] = rtb_uv_error_C_mPs_idx_0;
 
   /* Trigonometry: '<S99>/Trigonometric Function' incorporates:
@@ -166,7 +166,7 @@ void Controller_step(void)
    *  Inport: '<Root>/INS_Out'
    *  Trigonometry: '<S99>/Trigonometric Function2'
    */
-  rtb_uv_error_C_mPs_idx_1 = arm_sin_f32(-Controller_U.INS_Out.psi);
+  rtb_uv_error_C_mPs_idx_1 = csi_sin_f32(-Controller_U.INS_Out.psi);
   rtb_VectorConcatenate[1] = rtb_uv_error_C_mPs_idx_1;
 
   /* SignalConversion: '<S99>/ConcatBufferAtVector Concatenate1In3' incorporates:
@@ -637,12 +637,12 @@ void Controller_step(void)
   /* Trigonometry: '<S78>/Sin' incorporates:
    *  Inport: '<Root>/INS_Out'
    */
-  rtb_Add3 = arm_sin_f32(Controller_U.INS_Out.phi);
+  rtb_Add3 = csi_sin_f32(Controller_U.INS_Out.phi);
 
   /* Trigonometry: '<S78>/Cos1' incorporates:
    *  Inport: '<Root>/INS_Out'
    */
-  rtb_DiscreteTimeIntegrator1_j = arm_cos_f32(Controller_U.INS_Out.theta);
+  rtb_DiscreteTimeIntegrator1_j = csi_cos_f32(Controller_U.INS_Out.theta);
 
   /* Product: '<S78>/Multiply3' */
   rtb_Multiply_l_idx_1 = rtb_Add3 * rtb_DiscreteTimeIntegrator1_j *
@@ -651,7 +651,7 @@ void Controller_step(void)
   /* Trigonometry: '<S78>/Cos' incorporates:
    *  Inport: '<Root>/INS_Out'
    */
-  rtb_DiscreteTimeIntegrator_h = arm_cos_f32(Controller_U.INS_Out.phi);
+  rtb_DiscreteTimeIntegrator_h = csi_cos_f32(Controller_U.INS_Out.phi);
 
   /* Product: '<S78>/Multiply1' */
   rtb_rate_error_B_radPs_idx_1 = rtb_DiscreteTimeIntegrator_h * rtb_Add_i;
@@ -689,7 +689,7 @@ void Controller_step(void)
     if ((Controller_U.FMS_Out.cmd_mask & 1) > 0) {
       rtb_Multiply_l_idx_0 = Controller_U.FMS_Out.p_cmd;
     } else {
-      rtb_Multiply_l_idx_0 = rtb_Add3_j_idx_0 - arm_sin_f32
+      rtb_Multiply_l_idx_0 = rtb_Add3_j_idx_0 - csi_sin_f32
         (Controller_U.INS_Out.theta) * rtb_Subtract3_i;
     }
 
@@ -718,7 +718,7 @@ void Controller_step(void)
      *  Sum: '<S78>/Add2'
      *  Trigonometry: '<S78>/Sin1'
      */
-    rtb_Multiply_l_idx_0 = rtb_Add3_j_idx_0 - arm_sin_f32
+    rtb_Multiply_l_idx_0 = rtb_Add3_j_idx_0 - csi_sin_f32
       (Controller_U.INS_Out.theta) * rtb_Subtract3_i;
     rtb_Multiply_l_idx_1 += rtb_rate_error_B_radPs_idx_1;
     rtb_DiscreteTimeIntegrator1_j = rtb_DiscreteTimeIntegrator_h *
@@ -1037,7 +1037,7 @@ void Controller_step(void)
    *  Trigonometry: '<S110>/Cos'
    *  Trigonometry: '<S110>/Cos1'
    */
-  rtb_Subtract3_i = arm_cos_f32(Controller_U.INS_Out.phi) * arm_cos_f32
+  rtb_Subtract3_i = csi_cos_f32(Controller_U.INS_Out.phi) * csi_cos_f32
     (Controller_U.INS_Out.theta);
 
   /* Saturate: '<S110>/Saturation1' */
