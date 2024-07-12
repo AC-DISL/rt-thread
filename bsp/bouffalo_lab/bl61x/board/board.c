@@ -127,6 +127,78 @@ static void systick_isr(void)
     rt_tick_increase();
 }
 
+void bsp_initialize(void) {
+  /* start recording boot log */
+  FMT_CHECK(boot_log_init());
+
+  /* init uMCN */
+  FMT_CHECK(mcn_init());
+
+  /* create workqueue */
+  FMT_CHECK(workqueue_manager_init());
+
+  //     /* init storage devices */
+  //     RT_CHECK(drv_sdio_init());
+  //     RT_CHECK(drv_w25qxx_init("spi1_dev0", "mtdblk0"));
+  //     /* init file system */
+  //     FMT_CHECK(file_manager_init(mnt_table));
+
+  //     /* init parameter system */
+  //     FMT_CHECK(param_init());
+
+  //     /* init usbd_cdc */
+  //     RT_CHECK(drv_usb_cdc_init());
+
+  //     /* adc driver init */
+  //     RT_CHECK(drv_adc_init());
+
+  //     RT_CHECK(drv_aw2023_init("i2c0_dev0"));
+
+  // #if defined(FMT_USING_SIH) || defined(FMT_USING_HIL)
+  //     FMT_CHECK(advertise_sensor_imu(0));
+  //     FMT_CHECK(advertise_sensor_mag(0));
+  //     FMT_CHECK(advertise_sensor_baro(0));
+  //     FMT_CHECK(advertise_sensor_gps(0));
+  //     FMT_CHECK(advertise_sensor_airspeed(0));
+  // #else
+  //     /* init onboard sensors */
+  //     RT_CHECK(drv_bmi088_init("spi0_dev1", "spi0_dev0", "gyro0", "accel0",
+  //     0));//gps陀螺仪和加速度计的SPI连接和初始化
+  //     // RT_CHECK(drv_icm42688_init("spi0_dev4", "gyro1", "accel1", 0));
+  //     RT_CHECK(drv_bmm150_init("spi0_dev2", "mag0"));
+  //     RT_CHECK(drv_spl06_init("spi0_dev3", "barometer"));
+
+  //     drv_mtf_01_init("serial3");
+  //     // drv_up_tx_init("serial3");
+  //     // drv_nlink_linktrack_init("serial4");
+  //     RT_CHECK(gps_ubx_init("serial4", "gps"));
+
+  //     /* register sensor to sensor hub */
+  //     FMT_CHECK(register_sensor_imu("gyro0", "accel0", 0));
+  //     // FMT_CHECK(register_sensor_imu("gyro1", "accel1", 1));
+  //     FMT_CHECK(register_sensor_mag("mag0", 0));
+  //     FMT_CHECK(register_sensor_barometer("barometer"));
+  //     FMT_CHECK(advertise_sensor_optflow(0));
+  //     FMT_CHECK(advertise_sensor_rangefinder(0));
+
+  //     if (strcmp(STR(VEHICLE_TYPE), "Fixwing") == 0) {
+  //         // FMT_CHECK(advertise_sensor_airspeed(0));
+  //         // RT_CHECK(drv_ms4525_init("i2c0_dev1", NULL));
+  //         RT_CHECK(drv_ms4525_init("i2c0_dev1", "airspeed"));
+  //         FMT_CHECK(register_sensor_airspeed("airspeed"));
+  //     }
+  // #endif
+
+  //     /* init finsh */
+  //     finsh_system_init();
+  //     /* Mount finsh to console after finsh system init */
+  //     FMT_CHECK(console_enable_input());
+
+  // #ifdef FMT_USING_UNIT_TEST
+  //     utest_init();
+  // #endif
+}
+
 void rt_hw_board_init(void)
 {
     bflb_flash_init();

@@ -31,5 +31,6 @@ extern uint8_t __HeapLimit;
 #define RT_HW_HEAP_END      (void*)&__HeapLimit
 
 void rt_hw_board_init(void);
+void bsp_initialize(void);
 
 #endif
