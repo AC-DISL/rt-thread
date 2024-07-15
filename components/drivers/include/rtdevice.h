@@ -60,7 +60,8 @@ extern "C" {
 #ifdef RT_USING_SERIAL_V2
 #include "drivers/serial_v2.h"
 #else
-#include "drivers/serial.h"
+//#include "drivers/serial.h"
+#include "../../../bsp/bouffalo_lab/bl61x/applications/hal/serial/serial.h"
 #endif
 #endif /* RT_USING_SERIAL */
 

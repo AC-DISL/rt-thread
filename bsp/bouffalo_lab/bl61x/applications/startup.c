@@ -54,7 +54,7 @@ static void rt_init_thread_entry(void* parameter)
 #endif
 
     /* bsp initialization */
-    //bsp_initialize();
+    bsp_initialize();
 
     /* task initialization */
     task_manager_init();

@@ -11,7 +11,9 @@
 #include <rtthread.h>
 
 #include "board.h"
-//#include "drv_uart.h"
+#include "driver/gps/gps_ubx.h"
+#include "drv_uart.h"
+#include "module/workqueue/workqueue_manager.h"
 
 static void system_clock_init(void)
 {
@@ -171,7 +173,7 @@ void bsp_initialize(void) {
   //     drv_mtf_01_init("serial3");
   //     // drv_up_tx_init("serial3");
   //     // drv_nlink_linktrack_init("serial4");
-  //     RT_CHECK(gps_ubx_init("serial4", "gps"));
+  RT_CHECK(gps_ubx_init("uart1", "gps"));
 
   //     /* register sensor to sensor hub */
   //     FMT_CHECK(register_sensor_imu("gyro0", "accel0", 0));
@@ -218,7 +220,7 @@ void rt_hw_board_init(void)
 
     /* UART driver initialization is open by default */
 #ifdef RT_USING_SERIAL
-    rt_hw_uart_init();
+    rt_hw_uart_init(); // uart0 for console , uart1 for gps
 #endif
 
 #ifdef BSP_USING_PSRAM
@@ -228,7 +230,7 @@ void rt_hw_board_init(void)
 
     /* Set the shell console output device */
 #if defined(RT_USING_CONSOLE) && defined(RT_USING_DEVICE)
-    rt_console_set_device(RT_CONSOLE_DEVICE_NAME);
+    rt_console_set_device(RT_CONSOLE_DEVICE_NAME); // uart0
 #endif
 
 #ifdef RT_USING_COMPONENTS_INIT

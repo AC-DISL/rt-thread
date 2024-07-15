@@ -18,7 +18,7 @@
 extern "C" {
 #endif
 
-#define RT_USING_ULOG
+// #define RT_USING_ULOG
 #define ULOG_OUTPUT_FLOAT
 #define ULOG_OUTPUT_TIME
 #define ULOG_OUTPUT_LEVEL

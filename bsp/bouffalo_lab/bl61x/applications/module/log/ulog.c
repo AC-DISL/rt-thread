@@ -45,7 +45,7 @@
     #include <rtdevice.h>
 #endif
 
-#ifdef RT_USING_ULOG
+// #ifdef RT_USING_ULOG
 
     /* the number which is max stored line logs */
     #ifndef ULOG_ASYNC_OUTPUT_STORE_LINES
@@ -1237,4 +1237,4 @@ void ulog_deinit(void)
     ulog.init_ok = RT_FALSE;
 }
 
-#endif /* RT_USING_ULOG */
+// #endif /* RT_USING_ULOG */
