@@ -230,6 +230,8 @@
 /* General Drivers Configuration */
 
 #define BSP_USING_GPIO
+#define BSP_USING_PWM
+#define RT_USING_PWM
 
 /* General Purpose UARTs */
 
