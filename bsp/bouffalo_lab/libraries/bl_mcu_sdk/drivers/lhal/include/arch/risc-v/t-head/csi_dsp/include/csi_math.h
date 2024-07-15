@@ -41,6 +41,9 @@ extern "C"
 #include "csi_instance.h"
 
 
+#define TABLE_SIZE			256
+
+
 /**
  * @brief Processing function for the Q7 FIR filter.
  * @param[in]  S          points to an instance of the Q7 FIR filter structure.
@@ -3914,9 +3917,8 @@ __STATIC_FORCEINLINE q7_t csi_linear_interp_q7(
  * @param[in] x  input value in radians.
  * @return  sin(x).
  */
-static float32_t csi_sin_f32(
-    float32_t x){return sin(x);}
-
+float32_t csi_sin_f32(
+    float32_t x);
 
 /**
  * @brief  Fast approximation to the trigonometric sine function for Q31 data.
@@ -3941,9 +3943,8 @@ q15_t csi_sin_q15(
  * @param[in] x  input value in radians.
  * @return  cos(x).
  */
-static float32_t csi_cos_f32(
-    float32_t x){return cos(x);}
-
+float32_t csi_cos_f32(
+    float32_t x);
 
 /**
  * @brief Fast approximation to the trigonometric cosine function for Q31 data.
