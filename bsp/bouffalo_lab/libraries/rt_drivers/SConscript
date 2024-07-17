@@ -24,6 +24,9 @@ if GetDepend('RT_USING_PWM'):
 if GetDepend('RT_USING_WDT'):
     src += ['drv_wdt.c']
 
+if GetDepend('BSP_USING_SPI'):
+    src += ['drv_spi.c']
+
 group = DefineGroup('rt_drivers', src, depend = [''], CPPPATH = CPPPATH)
 
 objs = [group]

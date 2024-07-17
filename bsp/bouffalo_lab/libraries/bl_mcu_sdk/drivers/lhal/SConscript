@@ -25,6 +25,7 @@ src     = Split("""
     src/bflb_spi.c
     src/bflb_timer.c
     src/bflb_uart.c
+    src/bflb_spi.c
     src/bflb_wdg.c
     src/bflb_flash.c
     src/flash/bflb_sf_cfg.c

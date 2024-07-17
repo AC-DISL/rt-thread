@@ -37,7 +37,7 @@ extern "C" {
 #endif /* RT_USING_RTC */
 
 #ifdef RT_USING_SPI
-#include "drivers/spi.h"
+#include "../../../bsp/bouffalo_lab/bl61x/applications/hal/spi/spi.h"
 #endif /* RT_USING_SPI */
 
 #ifdef RT_USING_MTD_NOR

@@ -80,6 +80,8 @@
 #define RT_UNAMED_PIPE_NUMBER 64
 #define RT_USING_SERIAL
 #define RT_USING_SERIAL_V1
+#define RT_USING_PWM
+#define RT_USING_SPI
 #define RT_SERIAL_USING_DMA
 #define RT_SERIAL_RB_BUFSZ 64
 #define RT_USING_PIN
@@ -231,7 +233,13 @@
 
 #define BSP_USING_GPIO
 #define BSP_USING_PWM
-#define RT_USING_PWM
+
+/* SPI Drivers  Configuration*/
+
+#define BSP_USING_SPI
+#define SPI_SCK_USING_GPIO13
+#define SPI_MISO_USING_GPIO14
+#define SPI_MOSI_USING_GPIO15
 
 /* General Purpose UARTs */
 

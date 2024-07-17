@@ -163,16 +163,10 @@ void bsp_initialize(void) {
   //     FMT_CHECK(advertise_sensor_gps(0));
   //     FMT_CHECK(advertise_sensor_airspeed(0));
   // #else
-  //     /* init onboard sensors */
-  //     RT_CHECK(drv_bmi088_init("spi0_dev1", "spi0_dev0", "gyro0", "accel0",
-  //     0));//gps陀螺仪和加速度计的SPI连接和初始化
-  //     // RT_CHECK(drv_icm42688_init("spi0_dev4", "gyro1", "accel1", 0));
-  //     RT_CHECK(drv_bmm150_init("spi0_dev2", "mag0"));
-  //     RT_CHECK(drv_spl06_init("spi0_dev3", "barometer"));
-
-  //     drv_mtf_01_init("serial3");
-  //     // drv_up_tx_init("serial3");
-  //     // drv_nlink_linktrack_init("serial4");
+  /* init onboard sensors */
+  RT_CHECK(drv_bmi088_init("spi0_dev1", "spi0_dev0", "gyro0", "accel0", 0));
+  RT_CHECK(drv_bmm150_init("spi0_dev2", "mag0"));
+  RT_CHECK(drv_spl06_init("spi0_dev3", "barometer"));
   RT_CHECK(gps_ubx_init("uart1", "gps"));
 
   //     /* register sensor to sensor hub */
@@ -221,6 +215,10 @@ void rt_hw_board_init(void)
     /* UART driver initialization is open by default */
 #ifdef RT_USING_SERIAL
     rt_hw_uart_init(); // uart0 for console , uart1 for gps
+#endif
+
+#ifdef RT_USING_SPI
+    rt_hw_spi_init();
 #endif
 
 #ifdef BSP_USING_PSRAM
