@@ -51,8 +51,8 @@
 /** @defgroup TIMER_CAPTURE_POLARITY timer capture polarity definition
   * @{
   */
-#define TIMER_CAPTURE_POLARITY_POSITIVE 0
-#define TIMER_CAPTURE_POLARITY_NEGATIVE 1
+#define TIMER_CAPTURE_POLARITY_POSITIVE 0//上升沿
+#define TIMER_CAPTURE_POLARITY_NEGATIVE 1//下降沿
 /**
   * @}
   */

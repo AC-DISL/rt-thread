@@ -82,6 +82,7 @@
 #define RT_USING_SERIAL_V1
 #define RT_USING_PWM
 #define RT_USING_SPI
+// #define RT_USING_HWTIMER
 #define RT_SERIAL_USING_DMA
 #define RT_SERIAL_RB_BUFSZ 64
 #define RT_USING_PIN
@@ -240,6 +241,11 @@
 #define SPI_SCK_USING_GPIO13
 #define SPI_MISO_USING_GPIO14
 #define SPI_MOSI_USING_GPIO15
+
+/* Timer Drivers Configuration*/
+
+// #define BSP_USING_HWTIMER
+// #define BSP_USING_TIMER0
 
 /* General Purpose UARTs */
 

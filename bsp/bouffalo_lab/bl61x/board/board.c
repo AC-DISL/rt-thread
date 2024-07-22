@@ -11,9 +11,35 @@
 #include <rtthread.h>
 
 #include "board.h"
+#include "driver/barometer/spl06.h"
 #include "driver/gps/gps_ubx.h"
+#include "driver/imu/bmi088.h"
+#include "driver/mag/bmm150.h"
 #include "drv_uart.h"
+#include "model/control/control_interface.h"
+#include "model/fms/fms_interface.h"
+#include "model/ins/ins_interface.h"
+#include "module/console/console_config.h"
+#include "module/file_manager/file_manager.h"
+#include "module/mavproxy/mavproxy.h"
+#include "module/mavproxy/mavproxy_config.h"
+#include "module/pmu/power_manager.h"
+#include "module/sensor/sensor_hub.h"
+#include "module/sysio/actuator_cmd.h"
+#include "module/sysio/actuator_config.h"
+#include "module/sysio/auto_cmd.h"
+#include "module/sysio/gcs_cmd.h"
+#include "module/sysio/mission_data.h"
+#include "module/sysio/pilot_cmd.h"
+#include "module/sysio/pilot_cmd_config.h"
+#include "module/task_manager/task_manager.h"
+#include "module/toml/toml.h"
+#include "module/utils/devmq.h"
 #include "module/workqueue/workqueue_manager.h"
+
+#ifdef FMT_USING_SIH
+#include "model/plant/plant_interface.h"
+#endif
 
 static void system_clock_init(void)
 {
@@ -145,8 +171,8 @@ void bsp_initialize(void) {
   //     /* init file system */
   //     FMT_CHECK(file_manager_init(mnt_table));
 
-  //     /* init parameter system */
-  //     FMT_CHECK(param_init());
+  /* init parameter system */
+  FMT_CHECK(param_init());
 
   //     /* init usbd_cdc */
   //     RT_CHECK(drv_usb_cdc_init());
@@ -156,34 +182,34 @@ void bsp_initialize(void) {
 
   //     RT_CHECK(drv_aw2023_init("i2c0_dev0"));
 
-  // #if defined(FMT_USING_SIH) || defined(FMT_USING_HIL)
-  //     FMT_CHECK(advertise_sensor_imu(0));
-  //     FMT_CHECK(advertise_sensor_mag(0));
-  //     FMT_CHECK(advertise_sensor_baro(0));
-  //     FMT_CHECK(advertise_sensor_gps(0));
-  //     FMT_CHECK(advertise_sensor_airspeed(0));
-  // #else
+#if defined(FMT_USING_SIH) || defined(FMT_USING_HIL)
+  FMT_CHECK(advertise_sensor_imu(0));
+  FMT_CHECK(advertise_sensor_mag(0));
+  FMT_CHECK(advertise_sensor_baro(0));
+  FMT_CHECK(advertise_sensor_gps(0));
+  //   FMT_CHECK(advertise_sensor_airspeed(0));
+#else
   /* init onboard sensors */
   RT_CHECK(drv_bmi088_init("spi0_dev1", "spi0_dev0", "gyro0", "accel0", 0));
   RT_CHECK(drv_bmm150_init("spi0_dev2", "mag0"));
   RT_CHECK(drv_spl06_init("spi0_dev3", "barometer"));
   RT_CHECK(gps_ubx_init("uart1", "gps"));
 
-  //     /* register sensor to sensor hub */
-  //     FMT_CHECK(register_sensor_imu("gyro0", "accel0", 0));
-  //     // FMT_CHECK(register_sensor_imu("gyro1", "accel1", 1));
-  //     FMT_CHECK(register_sensor_mag("mag0", 0));
-  //     FMT_CHECK(register_sensor_barometer("barometer"));
-  //     FMT_CHECK(advertise_sensor_optflow(0));
-  //     FMT_CHECK(advertise_sensor_rangefinder(0));
+  /* register sensor to sensor hub */
+  FMT_CHECK(register_sensor_imu("gyro0", "accel0", 0));
+  // FMT_CHECK(register_sensor_imu("gyro1", "accel1", 1));
+  FMT_CHECK(register_sensor_mag("mag0", 0));
+  FMT_CHECK(register_sensor_barometer("barometer"));
+  FMT_CHECK(advertise_sensor_optflow(0));
+  FMT_CHECK(advertise_sensor_rangefinder(0));
 
-  //     if (strcmp(STR(VEHICLE_TYPE), "Fixwing") == 0) {
-  //         // FMT_CHECK(advertise_sensor_airspeed(0));
-  //         // RT_CHECK(drv_ms4525_init("i2c0_dev1", NULL));
-  //         RT_CHECK(drv_ms4525_init("i2c0_dev1", "airspeed"));
-  //         FMT_CHECK(register_sensor_airspeed("airspeed"));
-  //     }
-  // #endif
+  //   if (strcmp(STR(VEHICLE_TYPE), "Fixwing") == 0) {
+  //       // FMT_CHECK(advertise_sensor_airspeed(0));
+  //       // RT_CHECK(drv_ms4525_init("i2c0_dev1", NULL));
+  //       RT_CHECK(drv_ms4525_init("i2c0_dev1", "airspeed"));
+  //       FMT_CHECK(register_sensor_airspeed("airspeed"));
+  //   }
+#endif
 
   //     /* init finsh */
   //     finsh_system_init();

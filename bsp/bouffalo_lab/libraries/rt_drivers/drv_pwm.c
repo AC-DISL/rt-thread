@@ -313,10 +313,10 @@ int rt_hw_pwm_init(void)
     bflb_gpio_init(gpio, GPIO_PIN_3, // CH1N
                    GPIO_FUNC_PWM0 | GPIO_ALTERNATE | GPIO_PULLUP |
                        GPIO_SMT_EN | GPIO_DRV_1);
-    bflb_gpio_init(gpio, GPIO_PIN_21, // CH2N
+    bflb_gpio_init(gpio, GPIO_PIN_29, // CH2N
                    GPIO_FUNC_PWM0 | GPIO_ALTERNATE | GPIO_PULLUP |
                        GPIO_SMT_EN | GPIO_DRV_1);
-    bflb_gpio_init(gpio, GPIO_PIN_22, // CH3P
+    bflb_gpio_init(gpio, GPIO_PIN_30, // CH3P
                    GPIO_FUNC_PWM0 | GPIO_ALTERNATE | GPIO_PULLDOWN |
                        GPIO_SMT_EN | GPIO_DRV_1);
     struct bflb_device_s* pwm = bflb_device_get_by_name("pwm_v2_0");
