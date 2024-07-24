@@ -47,7 +47,7 @@
 #define RT_USING_DEVICE
 #define RT_USING_CONSOLE
 #define RT_CONSOLEBUF_SIZE 128
-#define RT_CONSOLE_DEVICE_NAME "uart0"
+#define RT_CONSOLE_DEVICE_NAME "serial0"
 #define RT_VER_NUM 0x50000
 #define ARCH_RISCV
 #define ARCH_RISCV_FPU
@@ -88,6 +88,7 @@
 #define RT_USING_PIN
 #define DFS_USING_POSIX
 #define RT_USING_DFS
+#define RT_USING_DFS_ELMFAT
 
 /* Using USB */
 

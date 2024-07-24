@@ -286,7 +286,7 @@ int rt_hw_uart_init(void)
 
     /* register USART device */
     result = hal_serial_register(
-        serial, "uart0",
+        serial, "serial0",
         RT_DEVICE_FLAG_RDWR | RT_DEVICE_FLAG_STANDALONE | RT_DEVICE_FLAG_INT_RX,
         uart);
     RT_ASSERT(result == RT_EOK);
@@ -308,7 +308,7 @@ int rt_hw_uart_init(void)
 
     /* register USART device */
     result = hal_serial_register(
-        serial, "uart1", RT_DEVICE_FLAG_RDWR | RT_DEVICE_FLAG_INT_RX, uart);
+        serial, "serial1", RT_DEVICE_FLAG_RDWR | RT_DEVICE_FLAG_INT_RX, uart);
     RT_ASSERT(result == RT_EOK);
 #endif
 
@@ -328,7 +328,7 @@ int rt_hw_uart_init(void)
 
     /* register USART device */
     result = hal_serial_register(
-        serial, "uart2", RT_DEVICE_FLAG_RDWR | RT_DEVICE_FLAG_INT_RX, uart);
+        serial, "serial2", RT_DEVICE_FLAG_RDWR | RT_DEVICE_FLAG_INT_RX, uart);
     RT_ASSERT(result == RT_EOK);
 #endif
     return 0;

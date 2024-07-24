@@ -23,7 +23,7 @@
 #define CONSOLE_BUFF_SIZE 1024
 
 /* console write hook function, can be reimplemented by other modules. */
-RT_WEAK void console_write_hook(const char* content, uint32_t len);
+rt_weak void console_write_hook(const char *content, uint32_t len);
 
 static rt_device_t console_dev;
 static char console_buffer[CONSOLE_BUFF_SIZE];

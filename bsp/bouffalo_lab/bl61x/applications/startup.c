@@ -60,7 +60,7 @@ static void rt_init_thread_entry(void* parameter)
     task_manager_init();
 
     /* bsp post initialization */
-    //bsp_post_initialize();
+    bsp_post_initialize();
 
     /* start task */
     task_manager_start();

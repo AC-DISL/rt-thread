@@ -54,7 +54,7 @@ void gpio_isr(int irq, void *arg) {
   static int i = 0;
   bool intstatus = bflb_gpio_get_intstatus(gpio, GPIO_PIN_10);
   if (intstatus) {
-    bflb_gpio_int_clear(gpio, GPIO_PIN_0);
+    bflb_gpio_int_clear(gpio, GPIO_PIN_10);
     ppm_update(&ppm_decoder, ic_val); // PPM信号捕获
   }
 

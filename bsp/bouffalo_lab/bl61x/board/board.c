@@ -7,10 +7,14 @@
  * Date           Author       Notes
  * 2023/03/15     flyingcys    first version
  */
+#include <firmament.h>
+#include <msh.h>
 #include <rthw.h>
 #include <rtthread.h>
+#include <shell.h>
 
 #include "board.h"
+#include "default_config.h"
 #include "driver/barometer/spl06.h"
 #include "driver/gps/gps_ubx.h"
 #include "driver/imu/bmi088.h"
@@ -40,6 +44,138 @@
 #ifdef FMT_USING_SIH
 #include "model/plant/plant_interface.h"
 #endif
+
+#define MATCH(a, b) (strcmp(a, b) == 0)
+#define SYS_CONFIG_FILE "/sys/sysconfig.toml"
+#define SYS_INIT_SCRIPT "/sys/init.sh"
+
+extern const struct romfs_dirent romfs_root;
+
+static const struct dfs_mount_tbl mnt_table[] = {
+    {"sd0", "/", "elm", 0, NULL},
+    {"mtdblk0", "/mnt/mtdblk0", "elm", 0, NULL},
+    {NULL, "/mnt/romfs", "rom", 0, &romfs_root},
+    {NULL} /* NULL indicate the end */
+};
+
+static toml_table_t *__toml_root_tab = NULL;
+
+static void banner_item(const char *name, const char *content, char pad,
+                        uint32_t len) {
+  int pad_len;
+
+  if (content == NULL) {
+    content = "NULL";
+  }
+
+  pad_len = len - strlen(name) - strlen(content);
+
+  if (pad_len < 1) {
+    pad_len = 1;
+  }
+  // e.g, name..............content
+  console_printf("%s", name);
+  while (pad_len--) {
+    console_write(&pad, 1);
+  }
+
+  console_printf("%s\n", content);
+}
+
+#define BANNER_ITEM_LEN 42
+static void bsp_show_information(void) {
+  char buffer[50];
+
+  console_printf("\n");
+  console_println("   _____                               __ ");
+  console_println("  / __(_)_____ _  ___ ___ _  ___ ___  / /_");
+  console_println(" / _// / __/  ' \\/ _ `/  ' \\/ -_) _ \\/ __/");
+  console_println("/_/ /_/_/ /_/_/_/\\_,_/_/_/_/\\__/_//_/\\__/ ");
+
+  sprintf(buffer, "FMT FW %s", FMT_VERSION);
+  banner_item("Firmware", buffer, '.', BANNER_ITEM_LEN);
+  sprintf(buffer, "RT-Thread v%ld.%ld.%ld", RT_VERSION, RT_SUBVERSION,
+          RT_REVISION);
+  banner_item("Kernel", buffer, '.', BANNER_ITEM_LEN);
+  banner_item("RAM", buffer, '.', BANNER_ITEM_LEN);
+  banner_item("Target", TARGET_NAME, '.', BANNER_ITEM_LEN);
+  banner_item("Vehicle", STR(VEHICLE_TYPE), '.', BANNER_ITEM_LEN);
+  banner_item("Airframe", STR(AIRFRAME), '.', BANNER_ITEM_LEN);
+  banner_item("INS Model", ins_model_info.info, '.', BANNER_ITEM_LEN);
+  banner_item("FMS Model", fms_model_info.info, '.', BANNER_ITEM_LEN);
+  banner_item("Control Model", control_model_info.info, '.', BANNER_ITEM_LEN);
+#ifdef FMT_USING_SIH
+  banner_item("Plant Model", plant_model_info.info, '.', BANNER_ITEM_LEN);
+#endif
+
+  console_println("Task Initialize:");
+  fmt_task_desc_t task_tab = get_task_table();
+  for (uint32_t i = 0; i < get_task_num(); i++) {
+    sprintf(buffer, "  %s", task_tab[i].name);
+    /* task status must be okay to reach here */
+    banner_item(buffer,
+                get_task_status(task_tab[i].name) == TASK_READY ? "OK" : "Fail",
+                '.', BANNER_ITEM_LEN);
+  }
+}
+
+static fmt_err_t bsp_parse_toml_sysconfig(toml_table_t *root_tab) {
+  fmt_err_t err = FMT_EOK;
+  toml_table_t *sub_tab;
+  const char *key;
+  const char *raw;
+  char *target;
+  int i;
+
+  if (root_tab == NULL) {
+    return FMT_ERROR;
+  }
+
+  /* target should be defined and match with bsp */
+  if ((raw = toml_raw_in(root_tab, "target")) != 0) {
+    if (toml_rtos(raw, &target) != 0) {
+      console_printf("Error: fail to parse type value\n");
+      err = FMT_ERROR;
+    }
+    if (!MATCH(target, TARGET_NAME)) {
+      /* check if target match */
+      console_printf("Error: target name doesn't match\n");
+      err = FMT_ERROR;
+    }
+    rt_free(target);
+  } else {
+    console_printf("Error: can not find target key\n");
+    err = FMT_ERROR;
+  }
+
+  if (err == FMT_EOK) {
+    /* traverse all sub-table */
+    for (i = 0; 0 != (key = toml_key_in(root_tab, i)); i++) {
+      /* handle all sub tables */
+      if (0 != (sub_tab = toml_table_in(root_tab, key))) {
+        if (MATCH(key, "console")) {
+          err = console_toml_config(sub_tab);
+        } else if (MATCH(key, "mavproxy")) {
+          err = mavproxy_toml_config(sub_tab);
+        } else if (MATCH(key, "pilot-cmd")) {
+          err = pilot_cmd_toml_config(sub_tab);
+        } else if (MATCH(key, "actuator")) {
+          err = actuator_toml_config(sub_tab);
+        } else {
+          console_printf("unknown table: %s\n", key);
+        }
+        if (err != FMT_EOK) {
+          console_printf("fail to parse %s\n", key);
+        }
+      }
+    }
+  }
+
+  /* free toml root table */
+  toml_free(root_tab);
+
+  return err;
+}
 
 static void system_clock_init(void)
 {
@@ -166,10 +302,10 @@ void bsp_initialize(void) {
   FMT_CHECK(workqueue_manager_init());
 
   //     /* init storage devices */
-  //     RT_CHECK(drv_sdio_init());
-  //     RT_CHECK(drv_w25qxx_init("spi1_dev0", "mtdblk0"));
+  //   RT_CHECK(drv_sdio_init());
+  //   RT_CHECK(drv_w25qxx_init("spi1_dev0", "mtdblk0"));
   //     /* init file system */
-  //     FMT_CHECK(file_manager_init(mnt_table));
+  FMT_CHECK(file_manager_init(mnt_table));
 
   /* init parameter system */
   FMT_CHECK(param_init());
@@ -212,9 +348,9 @@ void bsp_initialize(void) {
 #endif
 
   //     /* init finsh */
-  //     finsh_system_init();
-  //     /* Mount finsh to console after finsh system init */
-  //     FMT_CHECK(console_enable_input());
+  finsh_system_init();
+  /* Mount finsh to console after finsh system init */
+  FMT_CHECK(console_enable_input());
 
   // #ifdef FMT_USING_UNIT_TEST
   //     utest_init();
@@ -260,6 +396,49 @@ void rt_hw_board_init(void)
 #ifdef RT_USING_COMPONENTS_INIT
     rt_components_board_init();
 #endif
+}
+
+void bsp_post_initialize(void) {
+  /* toml system configure */
+  __toml_root_tab = toml_parse_config_file(SYS_CONFIG_FILE);
+  if (!__toml_root_tab) {
+    /* use default system configuration */
+    __toml_root_tab = toml_parse_config_string(default_conf);
+  }
+  FMT_CHECK(bsp_parse_toml_sysconfig(__toml_root_tab));
+
+  /* init rc */
+  FMT_CHECK(pilot_cmd_init());
+
+  /* init gcs */
+  FMT_CHECK(gcs_cmd_init());
+
+  /* init auto command */
+  FMT_CHECK(auto_cmd_init());
+
+  /* init mission data */
+  FMT_CHECK(mission_data_init());
+
+  /* init actuator */
+  FMT_CHECK(actuator_init());
+
+  /* start device message queue work */
+  FMT_CHECK(devmq_start_work());
+
+  /* initialize power management unit */
+  FMT_CHECK(pmu_init());
+
+  /* init led control */
+  //   FMT_CHECK(led_control_init());
+
+  /* show system information */
+  bsp_show_information();
+
+  /* execute init script */
+  msh_exec_script(SYS_INIT_SCRIPT, strlen(SYS_INIT_SCRIPT));
+
+  /* dump boot log to file */
+  boot_log_dump();
 }
 
 void rt_hw_cpu_reset(void)

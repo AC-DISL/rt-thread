@@ -23,6 +23,7 @@
 #include "bl616_glb.h"
 
 #define     HW_MTIMER_CLOCK     1000000
+#define TARGET_NAME "BL616"
 
 extern uint8_t __HeapBase;
 extern uint8_t __HeapLimit;
@@ -31,6 +32,7 @@ extern uint8_t __HeapLimit;
 #define RT_HW_HEAP_END      (void*)&__HeapLimit
 
 void rt_hw_board_init(void);
+void bsp_post_initialize(void);
 void bsp_initialize(void);
 
 #endif
