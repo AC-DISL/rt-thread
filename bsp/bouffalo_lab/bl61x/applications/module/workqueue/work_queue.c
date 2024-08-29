@@ -250,6 +250,7 @@ WorkQueue_t workqueue_create(const char* name, uint8_t size, uint16_t stack_size
 
     WorkQueue_t work_queue = (WorkQueue_t)rt_malloc(sizeof(struct WorkQueue));
     if (work_queue == NULL) {
+        rt_kprintf("Memory allocation failed for work_queue\n");
         return NULL;
     }
 
@@ -261,11 +262,13 @@ WorkQueue_t workqueue_create(const char* name, uint8_t size, uint16_t stack_size
                                           10);
 
     if (work_queue->thread == NULL) {
+        rt_kprintf("workqueue_create error_exit 1\n");
         goto error_exit;
     }
 
     work_queue->queue = (WorkItem_t*)rt_malloc(size * sizeof(WorkItem_t));
     if (work_queue->queue == NULL) {
+        rt_kprintf("workqueue_create error_exit 2\n");
         goto error_exit;
     }
     work_queue->qsize = size;
@@ -273,11 +276,13 @@ WorkQueue_t workqueue_create(const char* name, uint8_t size, uint16_t stack_size
 
     work_queue->lock = rt_sem_create(name, 1, RT_IPC_FLAG_FIFO);
     if (work_queue->lock == NULL) {
+        rt_kprintf("workqueue_create error_exit 3\n");
         goto error_exit;
     }
 
     if (rt_thread_startup(work_queue->thread) != RT_EOK) {
         rt_free(work_queue->thread->stack_addr);
+        rt_kprintf("workqueue_create error_exit 4\n");
         goto error_exit;
     }
 

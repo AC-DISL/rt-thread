@@ -66,7 +66,7 @@ static void rt_init_thread_entry(void* parameter)
     task_manager_start();
 }
 
-int rt_application_init()
+int rt_fmt_init()
 {
     tid0 = rt_thread_create("init",
                             rt_init_thread_entry,
@@ -84,53 +84,54 @@ int rt_application_init()
 /**
  * This function will startup RT-Thread RTOS.
  */
-void rtthread_startup(void)
-{
-    /* disable interrupt first */
-    rt_hw_interrupt_disable();
+// void rtthread_startup(void)
+// {
+//     /* disable interrupt first */
+//     rt_hw_interrupt_disable();
 
-    rt_assert_set_hook(assert_hook);
+//     rt_assert_set_hook(assert_hook);
 
-    /* board level initialization
-     * NOTE: please initialize heap inside board initialization.
-     */
-    rt_hw_board_init();
+//     /* board level initialization
+//      * NOTE: please initialize heap inside board initialization.
+//      */
+//     rt_hw_board_init();
 
-    /* init timer system */
-    rt_system_timer_init();
+//     /* init timer system */
+//     rt_system_timer_init();
 
-    /* init scheduler system */
-    rt_system_scheduler_init();
+//     /* init scheduler system */
+//     rt_system_scheduler_init();
 
-#ifdef RT_USING_SIGNALS
-    /* signal system initialization */
-    rt_system_signal_init();
-#endif
+// #ifdef RT_USING_SIGNALS
+//     /* signal system initialization */
+//     rt_system_signal_init();
+// #endif
 
-    /* init application */
-    rt_application_init();
+//     /* init application */
+//     rt_application_init();
 
-    /* init timer thread */
-    rt_system_timer_thread_init();
+//     /* init timer thread */
+//     rt_system_timer_thread_init();
 
-    /* init idle thread */
-    rt_thread_idle_init();
+//     /* init idle thread */
+//     rt_thread_idle_init();
 
-#ifdef RT_USING_SMP
-    rt_hw_spin_lock(&_cpus_lock);
-#endif /*RT_USING_SMP*/
+// #ifdef RT_USING_SMP
+//     rt_hw_spin_lock(&_cpus_lock);
+// #endif /*RT_USING_SMP*/
 
-    /* start scheduler */
-    rt_system_scheduler_start();
+//     /* start scheduler */
+//     rt_system_scheduler_start();
 
-    /* never reach here */
-    return;
-}
+//     /* never reach here */
+//     return;
+// }
 
-int entry(void)
+int main(void)
 {
     /* startup RT-Thread RTOS */
-    rtthread_startup();
+    rt_kprintf(" FMT INIT \n");
+    rt_fmt_init();
 
     return 0;
 }

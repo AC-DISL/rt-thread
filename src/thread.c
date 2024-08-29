@@ -497,6 +497,7 @@ rt_thread_t rt_thread_create(const char *name,
     {
         /* allocate stack failure */
         rt_object_delete((rt_object_t)thread);
+        rt_kprintf("RT_KERNEL_MALLOC stack_size error\n");
 
         return RT_NULL;
     }

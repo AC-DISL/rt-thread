@@ -294,12 +294,15 @@ static void systick_isr(void)
 void bsp_initialize(void) {
   /* start recording boot log */
   FMT_CHECK(boot_log_init());
+  rt_kprintf("boot_log_init compeleted\n");
 
   /* init uMCN */
   FMT_CHECK(mcn_init());
+  rt_kprintf("mcn_init compeleted\n");
 
   /* create workqueue */
   FMT_CHECK(workqueue_manager_init());
+  rt_kprintf("workqueue_manager_init compeleted\n");
 
   //     /* init storage devices */
   //   RT_CHECK(drv_sdio_init());
@@ -379,9 +382,9 @@ void rt_hw_board_init(void)
     rt_hw_uart_init(); // uart0 for console , uart1 for gps
 #endif
 
-#ifdef RT_USING_SPI
-    rt_hw_spi_init();
-#endif
+// #ifdef RT_USING_SPI
+//     rt_hw_spi_init();
+// #endif
 
 #ifdef BSP_USING_PSRAM
     board_psram_x8_init();
