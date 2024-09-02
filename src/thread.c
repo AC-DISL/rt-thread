@@ -492,6 +492,11 @@ rt_thread_t rt_thread_create(const char *name,
     if (thread == RT_NULL)
         return RT_NULL;
 
+    if(strcmp(name, "wq:hp_work") == 0)
+    {
+        rt_thread_delay(1000);
+    }
+
     stack_start = (void *)RT_KERNEL_MALLOC(stack_size);
     if (stack_start == RT_NULL)
     {

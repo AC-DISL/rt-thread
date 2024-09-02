@@ -471,6 +471,11 @@ rt_object_t rt_object_allocate(enum rt_object_class_type type, const char *name)
 
     RT_ASSERT(information != RT_NULL);
 
+    if(type == RT_Object_Class_Semaphore)
+    {
+        rt_thread_delay(1000);
+    }
+    
     object = (struct rt_object *)RT_KERNEL_MALLOC(information->object_size);
 
     rt_kprintf("information->object_size: %d\n", information->object_size);
