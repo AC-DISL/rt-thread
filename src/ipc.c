@@ -412,7 +412,6 @@ rt_sem_t rt_sem_create(const char *name, rt_uint32_t value, rt_uint8_t flag)
     sem = (rt_sem_t)rt_object_allocate(RT_Object_Class_Semaphore, name);
     if (sem == RT_NULL)
     {
-        rt_kprintf("rt_object_allocate sem error\n");
         return sem;
     }
         

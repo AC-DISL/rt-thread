@@ -467,22 +467,12 @@ rt_object_t rt_object_allocate(enum rt_object_class_type type, const char *name)
     /* get object information */
     information = rt_object_get_information(type);
 
-    rt_kprintf("***********type: %d\n", information->type);
-
     RT_ASSERT(information != RT_NULL);
-
-    if(type == RT_Object_Class_Semaphore)
-    {
-        rt_thread_delay(1000);
-    }
     
     object = (struct rt_object *)RT_KERNEL_MALLOC(information->object_size);
 
-    rt_kprintf("information->object_size: %d\n", information->object_size);
-
     if (object == RT_NULL)
     {
-        rt_kprintf("RT_KERNEL_MALLOC XX object error\n");
         /* no memory can be allocated */
         return RT_NULL;
     }
