@@ -16,7 +16,7 @@ if os.getenv('RTT_CC'):
 
 if  CROSS_TOOL == 'gcc':
     PLATFORM    = 'gcc'
-    EXEC_PATH   = 'E:\AIRCAS\32\riscv\Xuantie-900-gcc-elf-newlib-mingw-V2.10.0\bin'
+    EXEC_PATH   = ''
 else:
     print('Please make sure your toolchains is GNU GCC!')
     exit(0)
@@ -40,7 +40,7 @@ if PLATFORM == 'gcc':
     OBJCPY  = PREFIX + 'objcopy'
 
     DEVICE  = ' -march=rv32imafcpzpsfoperand_xtheade -mabi=ilp32f -mtune=e907'
-    CFLAGS  = DEVICE + ' -DRT_USING_LEGACY -std=gnu99 -fno-jump-tables -fno-common -fms-extensions -ffunction-sections -fdata-sections -fmessage-length=0 -Wall -Wchar-subscripts -Wformat -Wundef -Wuninitialized -Winit-self -Wignored-qualifiers -I E:\AIRCAS\\32\\riscv\RTT-FMT\components\legacy -I E:\AIRCAS\\32\\riscv\RTT-FMT\components\legacy\dfs -I E:\AIRCAS\\32\\riscv\RTT-FMT\components\dfs\include\ -I E:\AIRCAS\\32\\riscv\RTT-FMT\components\dfs\\filesystems\elmfat\ -I E:\AIRCAS\\32\\riscv\RTT-FMT\components\dfs\\filesystems\\romfs -I E:\AIRCAS\\32\\riscv\RTT-FMT\\applications -I E:\AIRCAS\\32\\riscv\RTT-FMT\\bsp\\bouffalo_lab\\bl61x\\applications\lib\mavlink\\v2.0\\fmt -I E:\AIRCAS\\32\\riscv\RTT-FMT\components/utilities/ulog -I E:\AIRCAS\\32\\riscv\RTT-FMT\\bsp\\bouffalo_lab\libraries\\bl_mcu_sdk\drivers\lhal\include\\arch\\risc-v\\t-head\csi_dsp\include -w'
+    CFLAGS  = DEVICE + f' -DRT_USING_LEGACY -std=gnu99 -fno-jump-tables -fno-common -fms-extensions -ffunction-sections -fdata-sections -fmessage-length=0 -Wall -Wchar-subscripts -Wformat -Wundef -Wuninitialized -Winit-self -Wignored-qualifiers -I {RTT_ROOT}\\components\\legacy -I {RTT_ROOT}\\components\\legacy\\dfs -I {RTT_ROOT}\\components\\dfs\\include\\ -I {RTT_ROOT}\\components\\dfs\\filesystems\\elmfat\\ -I {RTT_ROOT}\\components\\dfs\\filesystems\\romfs -I {RTT_ROOT}\\applications -I {RTT_ROOT}\\bsp\\bouffalo_lab\\bl61x\\applications\\lib\\mavlink\\v2.0\\fmt -I {RTT_ROOT}\\components/utilities/ulog -I {RTT_ROOT}\\bsp\\bouffalo_lab\\libraries\\bl_mcu_sdk\\drivers\\lhal\\include\\arch\\risc-v\\t-head\\csi_dsp\\include -w'
     CFLAGS += ' -fstrict-volatile-bitfields -fshort-enums -Wno-error=unused-variable -Wno-error=format= -Wno-error=unused-function -Wno-error=implicit-function-declaration -Wno-error=deprecated-declarations -Wno-format'
     LINKER_SCRIPTS = r'board/linker_scripts/bl616_flash.ld'
 
