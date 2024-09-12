@@ -393,7 +393,7 @@ void rt_hw_board_init(void)
 
     /* Set the shell console output device */
 #if defined(RT_USING_CONSOLE) && defined(RT_USING_DEVICE)
-    rt_console_set_device(RT_CONSOLE_DEVICE_NAME); // uart0
+    FMT_CHECK(console_init());
 #endif
 
 #ifdef RT_USING_COMPONENTS_INIT
