@@ -20,6 +20,8 @@
 #include "driver/imu/bmi088.h"
 #include "driver/mag/bmm150.h"
 #include "drv_uart.h"
+#include "drv_flash.h"
+#include "drv_rtc.h"
 #include "model/control/control_interface.h"
 #include "model/fms/fms_interface.h"
 #include "model/ins/ins_interface.h"
@@ -52,8 +54,8 @@
 extern const struct romfs_dirent romfs_root;
 
 static const struct dfs_mount_tbl mnt_table[] = {
-    {"sd0", "/", "elm", 0, NULL},
-    {"mtdblk0", "/mnt/mtdblk0", "elm", 0, NULL},
+    {"filesystem", "/", "elm", 0, NULL},
+    //{"mtdblk0", "/mnt/mtdblk0", "elm", 0, NULL},
     {NULL, "/mnt/romfs", "rom", 0, &romfs_root},
     {NULL} /* NULL indicate the end */
 };
@@ -304,14 +306,16 @@ void bsp_initialize(void) {
   FMT_CHECK(workqueue_manager_init());
   rt_kprintf("workqueue_manager_init compeleted\n");
 
-  //     /* init storage devices */
-  //   RT_CHECK(drv_sdio_init());
-  //   RT_CHECK(drv_w25qxx_init("spi1_dev0", "mtdblk0"));
-  //     /* init file system */
+  /* init storage devices */
+#ifdef BSP_USING_ON_CHIP_FLASH
+  rt_hw_on_chip_flash_init();
+#endif
+  /* init file system */
   FMT_CHECK(file_manager_init(mnt_table));
 
   /* init parameter system */
   FMT_CHECK(param_init());
+  rt_kprintf("param_init compeleted\n");
 
   //     /* init usbd_cdc */
   //     RT_CHECK(drv_usb_cdc_init());
@@ -332,7 +336,8 @@ void bsp_initialize(void) {
   RT_CHECK(drv_bmi088_init("spi0_dev1", "spi0_dev0", "gyro0", "accel0", 0));
   RT_CHECK(drv_bmm150_init("spi0_dev2", "mag0"));
   RT_CHECK(drv_spl06_init("spi0_dev3", "barometer"));
-  RT_CHECK(gps_ubx_init("uart1", "gps"));
+  RT_CHECK(gps_ubx_init("serial1", "gps"));
+  rt_kprintf("gps_ubx_init compeleted\n");
 
   /* register sensor to sensor hub */
   FMT_CHECK(register_sensor_imu("gyro0", "accel0", 0));
@@ -352,6 +357,7 @@ void bsp_initialize(void) {
 
   //     /* init finsh */
   finsh_system_init();
+  rt_kprintf("finsh_system_init compeleted\n");
   /* Mount finsh to console after finsh system init */
   FMT_CHECK(console_enable_input());
 
@@ -380,6 +386,11 @@ void rt_hw_board_init(void)
     /* UART driver initialization is open by default */
 #ifdef RT_USING_SERIAL
     rt_hw_uart_init(); // uart0 for console , uart1 for gps
+#endif
+
+#ifdef RT_USING_RTC
+    rt_hw_rtc_init();
+    
 #endif
 
 // #ifdef RT_USING_SPI

@@ -86,5 +86,5 @@ int rt_hw_rtc_init(void)
     return result;
 }
 
-INIT_DEVICE_EXPORT(rt_hw_rtc_init);
+// INIT_DEVICE_EXPORT(rt_hw_rtc_init);
 #endif /* RT_USING_RTC */

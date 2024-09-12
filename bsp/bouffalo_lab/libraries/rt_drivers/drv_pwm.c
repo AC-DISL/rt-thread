@@ -345,6 +345,6 @@ int rt_hw_pwm_init(void)
     }
     return result;
 }
-INIT_DEVICE_EXPORT(rt_hw_pwm_init);
+// INIT_DEVICE_EXPORT(rt_hw_pwm_init);
 
 #endif /* BSP_USING_PWM */

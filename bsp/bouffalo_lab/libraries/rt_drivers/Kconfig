@@ -481,5 +481,9 @@ menu "General Drivers Configuration"
                 default n
         endif
 
+    config BSP_USING_ON_CHIP_FLASH
+        bool "Enable on-chip FLASH"
+        default n
+
 endmenu
 

@@ -20,6 +20,14 @@
 #include "dfs_fs.h"
 #include "dfs_romfs.h"
 #include "module/file_manager/file_manager.h"
+#ifdef RT_USING_DFS
+#ifdef RT_USING_FAL
+#ifdef BSP_USING_ON_CHIP_FLASH
+#include "dfs_file.h"
+#include "fal.h"
+#endif /* RT_USING_DFS */
+#endif /* RT_USING_FAL */
+#endif /* BSP_USING_ON_CHIP_FLASH */
 
 #define MAX_LOG_SESSION_NUM 20
 #define LOG_SESSION_FILE    "/log/session_id"
@@ -195,12 +203,10 @@ fmt_err_t file_manager_init(const struct dfs_mount_tbl* mnt_table)
 {
     struct stat sta;
 
-    /* init dfs system */
     if (dfs_init() != 0) {
         printf("dfs init fail!\n");
         return FMT_ERROR;
     }
-    /* init fatfs */
     if (elm_init() != 0) {
         printf("fatfs init fail!\n");
         return FMT_ERROR;
@@ -221,16 +227,38 @@ fmt_err_t file_manager_init(const struct dfs_mount_tbl* mnt_table)
 
     if (strcmp("/", mnt_table[0].path) == 0) {
         /* mount root directory */
+        struct rt_device *rootfs = RT_NULL;
+
+        //将flash中filesystem分区抽象为块设备
+        rootfs = fal_blk_device_create("filesystem");
+        if(rootfs == RT_NULL){
+            return -RT_ERROR;
+        }
+
+        //将elm fat文件系统挂载到块设备上
         if (dfs_mount(mnt_table[0].device_name,
                       mnt_table[0].path,
                       mnt_table[0].filesystemtype,
                       mnt_table[0].rwflag,
-                      mnt_table[0].data)
-            != 0) {
-            printf("Fail to mount %s at %s!\n",
-                   mnt_table[0].device_name,
-                   mnt_table[0].path);
+                      mnt_table[0].data) == 0) {
+            rt_kprintf("file system initialization done!\n");
+        } else {
+            if(dfs_mkfs(mnt_table[0].filesystemtype, mnt_table[0].device_name) == 0)
+            {
+                if (dfs_mount(mnt_table[0].device_name,
+                      mnt_table[0].path,
+                      mnt_table[0].filesystemtype,
+                      mnt_table[0].rwflag,
+                      mnt_table[0].data) == 0) {
+                    rt_kprintf("file system initialization done!\n");
+                } else {
+                    rt_kprintf("file system initialization failed!\n");
+                }
+            } else {
+                    rt_kprintf("file system format failed!\n");
+            }
         }
+
         /* create rootfs */
         FMT_TRY(create_rootfs());
 
