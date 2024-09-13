@@ -393,9 +393,9 @@ void rt_hw_board_init(void)
     
 #endif
 
-// #ifdef RT_USING_SPI
-//     rt_hw_spi_init();
-// #endif
+#ifdef RT_USING_SPI
+    rt_hw_spi_init();
+#endif
 
 #ifdef BSP_USING_PSRAM
     board_psram_x8_init();
