@@ -29,7 +29,7 @@
 #endif /* RT_USING_FAL */
 #endif /* BSP_USING_ON_CHIP_FLASH */
 
-#define MAX_LOG_SESSION_NUM 20
+#define MAX_LOG_SESSION_NUM 40
 #define LOG_SESSION_FILE    "/log/session_id"
 
 static int cws_id; /* current work session id */

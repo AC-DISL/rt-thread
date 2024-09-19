@@ -11,6 +11,7 @@
 #include <rtthread.h>
 #include <rtdevice.h>
 #include "drv_pwm.h"
+#include "bflb_mtimer.h"
 
 #define DBG_LEVEL DBG_LOG
 #include <rtdbg.h>
@@ -26,8 +27,8 @@ static struct bflb_pwm_v2_config_s cfg;
 
 struct bflb_pwm_v2_channel_config_s ch_cfg[PWM_V2_CH_MAX] = {
     {
-        .positive_polarity = PWM_POLARITY_ACTIVE_HIGH,
-        .negative_polarity = PWM_POLARITY_ACTIVE_HIGH,
+        .positive_polarity = PWM_POLARITY_ACTIVE_LOW,
+        .negative_polarity = PWM_POLARITY_ACTIVE_LOW,
         .positive_stop_state = PWM_STATE_INACTIVE,
         .negative_stop_state = PWM_STATE_ACTIVE,
         .positive_brake_state = PWM_STATE_INACTIVE,
@@ -35,8 +36,8 @@ struct bflb_pwm_v2_channel_config_s ch_cfg[PWM_V2_CH_MAX] = {
         .dead_time = 0,
     },
     {
-        .positive_polarity = PWM_POLARITY_ACTIVE_HIGH,
-        .negative_polarity = PWM_POLARITY_ACTIVE_HIGH,
+        .positive_polarity = PWM_POLARITY_ACTIVE_LOW,
+        .negative_polarity = PWM_POLARITY_ACTIVE_LOW,
         .positive_stop_state = PWM_STATE_ACTIVE,
         .negative_stop_state = PWM_STATE_INACTIVE,
         .positive_brake_state = PWM_STATE_ACTIVE,
@@ -44,8 +45,8 @@ struct bflb_pwm_v2_channel_config_s ch_cfg[PWM_V2_CH_MAX] = {
         .dead_time = 0,
     },
     {
-        .positive_polarity = PWM_POLARITY_ACTIVE_HIGH,
-        .negative_polarity = PWM_POLARITY_ACTIVE_HIGH,
+        .positive_polarity = PWM_POLARITY_ACTIVE_LOW,
+        .negative_polarity = PWM_POLARITY_ACTIVE_LOW,
         .positive_stop_state = PWM_STATE_INACTIVE,
         .negative_stop_state = PWM_STATE_INACTIVE,
         .positive_brake_state = PWM_STATE_INACTIVE,
@@ -53,8 +54,8 @@ struct bflb_pwm_v2_channel_config_s ch_cfg[PWM_V2_CH_MAX] = {
         .dead_time = 0,
     },
     {
-        .positive_polarity = PWM_POLARITY_ACTIVE_HIGH,
-        .negative_polarity = PWM_POLARITY_ACTIVE_HIGH,
+        .positive_polarity = PWM_POLARITY_ACTIVE_LOW,
+        .negative_polarity = PWM_POLARITY_ACTIVE_LOW,
         .positive_stop_state = PWM_STATE_ACTIVE,
         .negative_stop_state = PWM_STATE_ACTIVE,
         .positive_brake_state = PWM_STATE_ACTIVE,
@@ -322,7 +323,7 @@ int rt_hw_pwm_init(void)
     struct bflb_device_s* pwm = bflb_device_get_by_name("pwm_v2_0");
 
     cfg.clk_source = BFLB_SYSTEM_PBCLK;
-    cfg.clk_div = 16000;
+    cfg.clk_div = 1600;
     cfg.period = 100;
     __pwm_freq = cfg.clk_source / (cfg.clk_div * cfg.period);
     bflb_pwm_v2_init(pwm, &cfg); // 50hz
@@ -330,11 +331,19 @@ int rt_hw_pwm_init(void)
     bflb_pwm_v2_channel_set_threshold(pwm, PWM_CH1, 0, 50);
     bflb_pwm_v2_channel_set_threshold(pwm, PWM_CH2, 0, 50);
     bflb_pwm_v2_channel_set_threshold(pwm, PWM_CH3, 0, 50);
+    bflb_pwm_v2_channel_init(pwm, PWM_CH0, &ch_cfg[0]);
+    bflb_pwm_v2_channel_init(pwm, PWM_CH1, &ch_cfg[1]);
+    bflb_pwm_v2_channel_init(pwm, PWM_CH2, &ch_cfg[2]);
+    bflb_pwm_v2_channel_init(pwm, PWM_CH3, &ch_cfg[3]);
+    bflb_pwm_v2_channel_positive_start(pwm, PWM_CH0);
     bflb_pwm_v2_channel_negative_start(pwm, PWM_CH0);
+    bflb_pwm_v2_channel_positive_start(pwm, PWM_CH1);
     bflb_pwm_v2_channel_negative_start(pwm, PWM_CH1);
+    bflb_pwm_v2_channel_positive_start(pwm, PWM_CH2);
     bflb_pwm_v2_channel_negative_start(pwm, PWM_CH2);
     bflb_pwm_v2_channel_positive_start(pwm, PWM_CH3);
-    bflb_pwm_v2_start(pwm);
+    bflb_pwm_v2_channel_negative_start(pwm, PWM_CH3);
+    // bflb_pwm_v2_start(pwm);
 
     // result = rt_device_pwm_register(&pwm_device, "pwm", &_pwm_ops, 0);
     result =
@@ -346,5 +355,38 @@ int rt_hw_pwm_init(void)
     return result;
 }
 // INIT_DEVICE_EXPORT(rt_hw_pwm_init);
+
+
+static int pwmtest(int argc, char *argv[])
+{
+    struct bflb_device_s* pwm = bflb_device_get_by_name("pwm_v2_0");
+
+    bflb_pwm_v2_start(pwm);
+    rt_kprintf("pwm test start\n");
+    bflb_mtimer_delay_ms(5000);
+    bflb_pwm_v2_channel_set_threshold(pwm, PWM_CH0, 0, 50);
+    bflb_pwm_v2_channel_set_threshold(pwm, PWM_CH1, 0, 50);
+    bflb_pwm_v2_channel_set_threshold(pwm, PWM_CH2, 0, 50);
+    bflb_pwm_v2_channel_set_threshold(pwm, PWM_CH3, 0, 50);
+    bflb_mtimer_delay_ms(8000);
+    rt_kprintf("pwm duty cycle 70\n");
+    bflb_pwm_v2_channel_set_threshold(pwm, PWM_CH0, 0, 70);
+    bflb_pwm_v2_channel_set_threshold(pwm, PWM_CH1, 0, 70);
+    bflb_pwm_v2_channel_set_threshold(pwm, PWM_CH2, 0, 70);
+    bflb_pwm_v2_channel_set_threshold(pwm, PWM_CH3, 0, 70);
+    bflb_mtimer_delay_ms(8000);
+    rt_kprintf("pwm duty cycle 90\n");
+    bflb_pwm_v2_channel_set_threshold(pwm, PWM_CH0, 0, 90);
+    bflb_pwm_v2_channel_set_threshold(pwm, PWM_CH1, 0, 90);
+    bflb_pwm_v2_channel_set_threshold(pwm, PWM_CH2, 0, 90);
+    bflb_pwm_v2_channel_set_threshold(pwm, PWM_CH3, 0, 90);
+    bflb_mtimer_delay_ms(8000);
+    rt_kprintf("pwm duty cycle 50, test end\n");
+    bflb_pwm_v2_channel_set_threshold(pwm, PWM_CH0, 0, 50);
+    bflb_pwm_v2_channel_set_threshold(pwm, PWM_CH1, 0, 50);
+    bflb_pwm_v2_channel_set_threshold(pwm, PWM_CH2, 0, 50);
+    bflb_pwm_v2_channel_set_threshold(pwm, PWM_CH3, 0, 50);
+}
+MSH_CMD_EXPORT(pwmtest, pwm loopback test);
 
 #endif /* BSP_USING_PWM */

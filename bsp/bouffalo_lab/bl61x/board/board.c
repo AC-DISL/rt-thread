@@ -22,6 +22,8 @@
 #include "drv_uart.h"
 #include "drv_flash.h"
 #include "drv_rtc.h"
+#include "drv_pwm.h"
+#include "drv_rc.h"
 #include "model/control/control_interface.h"
 #include "model/fms/fms_interface.h"
 #include "model/ins/ins_interface.h"
@@ -333,19 +335,19 @@ void bsp_initialize(void) {
   //   FMT_CHECK(advertise_sensor_airspeed(0));
 #else
   /* init onboard sensors */
-  RT_CHECK(drv_bmi088_init("spi0_dev1", "spi0_dev0", "gyro0", "accel0", 0));
-  RT_CHECK(drv_bmm150_init("spi0_dev2", "mag0"));
-  RT_CHECK(drv_spl06_init("spi0_dev3", "barometer"));
-  RT_CHECK(gps_ubx_init("serial1", "gps"));
-  rt_kprintf("gps_ubx_init compeleted\n");
+  // RT_CHECK(drv_bmi088_init("spi0_dev1", "spi0_dev0", "gyro0", "accel0", 0));
+  // RT_CHECK(drv_bmm150_init("spi0_dev2", "mag0"));
+  // RT_CHECK(drv_spl06_init("spi0_dev3", "barometer"));
+  // RT_CHECK(gps_ubx_init("serial1", "gps"));
+  // rt_kprintf("gps_ubx_init compeleted\n");
 
-  /* register sensor to sensor hub */
-  FMT_CHECK(register_sensor_imu("gyro0", "accel0", 0));
-  // FMT_CHECK(register_sensor_imu("gyro1", "accel1", 1));
-  FMT_CHECK(register_sensor_mag("mag0", 0));
-  FMT_CHECK(register_sensor_barometer("barometer"));
-  FMT_CHECK(advertise_sensor_optflow(0));
-  FMT_CHECK(advertise_sensor_rangefinder(0));
+  // /* register sensor to sensor hub */
+  // FMT_CHECK(register_sensor_imu("gyro0", "accel0", 0));
+  // // FMT_CHECK(register_sensor_imu("gyro1", "accel1", 1));
+  // FMT_CHECK(register_sensor_mag("mag0", 0));
+  // FMT_CHECK(register_sensor_barometer("barometer"));
+  // FMT_CHECK(advertise_sensor_optflow(0));
+  // FMT_CHECK(advertise_sensor_rangefinder(0));
 
   //   if (strcmp(STR(VEHICLE_TYPE), "Fixwing") == 0) {
   //       // FMT_CHECK(advertise_sensor_airspeed(0));
@@ -410,6 +412,10 @@ void rt_hw_board_init(void)
 #ifdef RT_USING_COMPONENTS_INIT
     rt_components_board_init();
 #endif
+
+    rt_hw_pwm_init();
+
+    drv_rc_init();
 }
 
 void bsp_post_initialize(void) {

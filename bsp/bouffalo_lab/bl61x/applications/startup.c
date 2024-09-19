@@ -57,13 +57,13 @@ static void rt_init_thread_entry(void* parameter)
     bsp_initialize();
 
     /* task initialization */
-    task_manager_init();
+    // task_manager_init();
 
-    /* bsp post initialization */
-    bsp_post_initialize();
+    // /* bsp post initialization */
+    // bsp_post_initialize();
 
-    /* start task */
-    task_manager_start();
+    // /* start task */
+    // task_manager_start();
 }
 
 int rt_fmt_init()
