@@ -113,7 +113,8 @@ uint64_t systime_now_us(void)
  */
 uint32_t systime_now_ms(void)
 {
-    uint32_t time_now_ms = systime_now_us() / 1e3;
+    // uint32_t time_now_ms = systime_now_us() / 1e3;
+    uint32_t time_now_ms = rt_tick_get();
 
     return time_now_ms;
 }
