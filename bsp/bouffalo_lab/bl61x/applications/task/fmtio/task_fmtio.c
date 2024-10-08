@@ -21,13 +21,14 @@
 
 fmt_err_t task_fmtio_init(void)
 {
+    return FMT_EOK;
     return fmtio_init(FMTIO_DEVICE_NAME);
 }
 
 void task_fmtio_entry(void* parameter)
 {
     /* execute fmtio main loop */
-    fmtio_loop();
+    //fmtio_loop();
 }
 
 TASK_EXPORT __fmt_task_desc = {

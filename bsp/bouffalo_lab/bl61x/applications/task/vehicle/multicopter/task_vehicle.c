@@ -50,12 +50,11 @@ void task_vehicle_entry(void* parameter)
     rt_err_t res;
     rt_uint32_t recv_set = 0;
     uint32_t wait_set = EVENT_VEHICLE_UPDATE;
+    printf("task_vehicle_entry\n");
 
     while (1) {
         res = rt_event_recv(&event_vehicle, wait_set, RT_EVENT_FLAG_OR | RT_EVENT_FLAG_CLEAR, RT_WAITING_FOREVER, &recv_set);
-
         if (res == RT_EOK) {
-            if (recv_set & EVENT_VEHICLE_UPDATE) {
                 time_now = systime_now_ms();
                 /* record loop start time */
                 if (time_start == 0) {
@@ -64,46 +63,45 @@ void task_vehicle_entry(void* parameter)
                 /* the model simulation start from 0, so we calcualtet the timestamp relative to start time */
                 timestamp = time_now - time_start;
 
-#if !defined(FMT_USING_HIL) && !defined(FMT_USING_SIH)
-                sensor_collect();
-#endif
-                pilot_cmd_collect();
-                gcs_cmd_collect();
-                mission_data_collect();
+// #if !defined(FMT_USING_HIL) && !defined(FMT_USING_SIH)
+//                 sensor_collect();
+// #endif
+//                 pilot_cmd_collect();
+//                 gcs_cmd_collect();
+//                 mission_data_collect();
 
-#ifdef FMT_USING_SIH
-                /* run Plant model */
-                PERIOD_EXECUTE3(plant_step, plant_model_info.period, time_now, plant_interface_step(timestamp););
-#endif
-                /* run INS model */
-                PERIOD_EXECUTE3(ins_step, ins_model_info.period, time_now, ins_interface_step(timestamp););
-                /* run FMS model */
-                PERIOD_EXECUTE3(fms_step, fms_model_info.period, time_now, fms_interface_step(timestamp););
-                /* run Controller model */
-                PERIOD_EXECUTE3(control_step, control_model_info.period, time_now, control_interface_step(timestamp););
+// #ifdef FMT_USING_SIH
+//                 /* run Plant model */
+//                 PERIOD_EXECUTE3(plant_step, plant_model_info.period, time_now, plant_interface_step(timestamp););
+// #endif
+//                 /* run INS model */
+//                 PERIOD_EXECUTE3(ins_step, ins_model_info.period, time_now, ins_interface_step(timestamp););
+//                 /* run FMS model */
+//                 PERIOD_EXECUTE3(fms_step, fms_model_info.period, time_now, fms_interface_step(timestamp););
+//                 /* run Controller model */
+//                 PERIOD_EXECUTE3(control_step, control_model_info.period, time_now, control_interface_step(timestamp););
 
                 /* send actuator command */
                 send_actuator_cmd();
-            }
         }
     }
 }
 
 fmt_err_t task_vehicle_init(void)
 {
-#if defined(FMT_USING_SIH)
-    /* init plant model */
-    plant_interface_init();
-#endif
+// #if defined(FMT_USING_SIH)
+//     /* init plant model */
+//     plant_interface_init();
+// #endif
 
-    /* init ins model */
-    ins_interface_init();
+//     /* init ins model */
+//     ins_interface_init();
 
-    /* init fms model */
-    fms_interface_init();
+//     /* init fms model */
+//     fms_interface_init();
 
-    /* init controller model */
-    control_interface_init();
+//     /* init controller model */
+//     control_interface_init();
 
     /* create event */
     if (rt_event_init(&event_vehicle, "vehicle", RT_IPC_FLAG_FIFO) != RT_EOK) {

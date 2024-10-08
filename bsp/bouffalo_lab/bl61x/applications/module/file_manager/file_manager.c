@@ -194,6 +194,58 @@ fmt_err_t current_log_session(char* path)
     }
 }
 
+const char *param_info = "# FMT System Configuration File\n"
+                         "\n"
+                         "# The target should match with BSP's target name\n"
+                         "target = \"BL616\"\n"
+                         "\n"
+                         "# Pilot CMD Configuration\n"
+                         "[pilot-cmd]\n"
+                         "    # channel mapping for [yaw, throttle, roll, pitch]\n"
+                         "    stick-channel = [4,3,1,2]\n"
+                         "\n"
+                         "    [pilot-cmd.device]\n"
+                         "    type = \"rc\"\n"
+                         "    name = \"rc\"\n"
+                         "    protocol = \"auto\"           # auto/sbus/ppm\n"
+                         "    channel-num = 8             # max supported channel: sbus:16, ppm:8\n"
+                         "    sample-time = 0.05          # sample time in second (-1 for inherit)\n"
+                         "    range = [1000,2000]\n"
+                         "\n"
+                         "    [[pilot-cmd.mode]]\n"
+                         "    mode = 5                    # Position mode\n"
+                         "    channel = 5\n"
+                         "    range = [1000,1300]\n"
+                         "\n"
+                         "    [[pilot-cmd.mode]]\n"
+                         "    mode = 4                    # Altitude mode\n"
+                         "    channel = 5\n"
+                         "    range = [1400,1600]\n"
+                         "\n"
+                         "    [[pilot-cmd.mode]]\n"
+                         "    mode = 3                    # Stabilize mode\n"
+                         "    channel = 5\n"
+                         "    range = [1700,2000]\n"
+                         "\n"
+                         "    [[pilot-cmd.command]]\n"
+                         "    type = 1                    # 1:event | 2:status\n"
+                         "    cmd = 1002                  # FMS_Cmd_Disarm\n"
+                         "    channel = 6\n"
+                         "    range = [1800,2000]\n"
+                         "\n"
+                         "# Actuator Configuration\n"
+                         "[actuator]\n"
+                         "    [[actuator.devices]]\n"
+                         "    protocol = \"pwm\"\n"
+                         "    name = \"main_out\"\n"
+                         "    freq = 400                  # pwm frequency in Hz\n"
+                         "\n"
+                         "    [[actuator.mappings]]\n"
+                         "    from = \"rc_channels\"\n"
+                         "    to = \"main_out\"\n"
+                         "    chan-map = [[1,2,3,4],[1,2,3,4]]\n"
+                         "\n";
+
 /**
  * Initialize the file system.
  * 
@@ -294,5 +346,15 @@ fmt_err_t file_manager_init(const struct dfs_mount_tbl* mnt_table)
         }
     }
 
+    int fd = 0;
+    if(fd = open("/sys/sysconfig.toml", 0x777) < 0){
+        fd = creat("/sys/sysconfig.toml", 0x777);
+        int len = write(fd, param_info, strlen(param_info));
+        printf("write param %d,%d\n",len, strlen(param_info));
+        close(fd);
+    }else{
+        printf("exist /sys/sysconfig.toml\n");
+        close(fd);
+    }
     return FMT_EOK;
 }
