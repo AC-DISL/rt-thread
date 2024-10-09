@@ -52,6 +52,7 @@ void ppm_update(ppm_decoder_t* decoder, uint32_t ic_val)
             /* reveived all channel data */
             for (uint8_t i = 0; i < decoder->total_chan; i++) {
                 decoder->ppm_val[i] = decoder->scale_us * temp_val[i];
+                rt_kprintf("********decoder->ppm_val[%d]:%d \n", i, decoder->ppm_val[i]);
 
                 if (decoder->ppm_val[i] < 1000) {
                     decoder->ppm_val[i] = 1000;
@@ -59,6 +60,7 @@ void ppm_update(ppm_decoder_t* decoder, uint32_t ic_val)
                     decoder->ppm_val[i] = 2000;
                 }
             }
+            rt_kprintf("=================================================\n");
 
             decoder->ppm_recvd = 1;
         }
