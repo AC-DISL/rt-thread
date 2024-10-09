@@ -346,19 +346,15 @@ fmt_err_t file_manager_init(const struct dfs_mount_tbl* mnt_table)
         }
     }
 
-    int fd = 0;
-    // if(fd = open("/sys/sysconfig.toml", 0x777) < 0){
-    //     fd = creat("/sys/sysconfig.toml", 0x777);
-    //     int len = write(fd, param_info, strlen(param_info));
-    //     printf("write param %d,%d\n",len, strlen(param_info));
-    //     close(fd);
-    // }else{
-    //     printf("exist /sys/sysconfig.toml\n");
-    //     close(fd);
-    // }
-     fd = creat("/sys/sysconfig.toml", 0x777);
+    FILE* fp = fopen("/sys/sysconfig.toml", "r");
+    if(!fp){
+        int fd = creat("/sys/sysconfig.toml", 0x777);
         int len = write(fd, param_info, strlen(param_info));
-        rt_kprintf("write param %d,%d\n",len, strlen(param_info));
+        printf("write param %d,%d\n",len, strlen(param_info));
         close(fd);
+    }else{
+        printf("exist /sys/sysconfig.toml.\n");
+        fclose(fp);
+    }
     return FMT_EOK;
 }
