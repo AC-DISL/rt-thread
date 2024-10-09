@@ -377,10 +377,10 @@ fmt_err_t actuator_toml_config(toml_table_t* table)
             continue;
         }
 
-        // if (rt_device_open(&act_dev->parent, RT_DEVICE_OFLAG_RDWR) != RT_EOK) {
-        //     printf("rt_device_open error\n");
-        //     return FMT_ERROR;
-        // }
+        if (rt_device_open(&act_dev->parent, RT_DEVICE_OFLAG_RDWR) != RT_EOK) {
+            rt_kprintf("rt_device_open error\n");
+            return FMT_ERROR;
+        }
     }
 
     return FMT_EOK;

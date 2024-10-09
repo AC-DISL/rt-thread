@@ -63,99 +63,6 @@ struct bflb_pwm_v2_channel_config_s ch_cfg[PWM_V2_CH_MAX] = {
         .dead_time = 0,
     }};
 
-static rt_err_t _pwm_set(rt_uint8_t channel, struct rt_pwm_configuration *configuration)
-{
-    struct bflb_device_s* pwm = bflb_device_get_by_name("pwm_v2_0");
-
-    uint32_t period_hz = 1000000000 / configuration->period;
-
-    struct bflb_pwm_v2_config_s pwm_config;
-
-    pwm_config.clk_source = BFLB_SYSTEM_XCLK;
-
-    pwm_config.clk_div = 40;
-
-    pwm_config.period = 1000000 / period_hz;
-
-    bflb_pwm_v2_init(pwm, &pwm_config);
-
-    struct bflb_pwm_v2_channel_config_s pwm_ch_config = {
-        .positive_polarity = PWM_POLARITY_ACTIVE_HIGH,
-        .negative_polarity = PWM_POLARITY_ACTIVE_HIGH,
-        .positive_stop_state = PWM_STATE_INACTIVE,
-        .negative_stop_state = PWM_STATE_ACTIVE,
-        .positive_brake_state = PWM_STATE_INACTIVE,
-        .negative_brake_state = PWM_STATE_INACTIVE,
-        .dead_time = 0,
-    };
-
-    bflb_pwm_v2_channel_init(pwm, channel, &pwm_ch_config);
-
-    bflb_pwm_v2_channel_set_threshold(pwm, channel, 0, configuration->pulse);
-
-    bflb_pwm_v2_channel_positive_stop(pwm, channel);
-    bflb_pwm_v2_channel_negative_stop(pwm, channel);
-    bflb_pwm_v2_stop(pwm);
-
-    bflb_pwm_v2_channel_positive_start(pwm, channel);
-    bflb_pwm_v2_channel_negative_start(pwm, channel);
-    bflb_pwm_v2_start(pwm);
-
-    return RT_EOK;
-}
-
-static rt_err_t _pwm_get(rt_uint8_t channel, struct rt_pwm_configuration *configuration)
-{
-    uint32_t reg_base, regval, tmp;
-    float period;
-
-    reg_base = bflb_device_get_by_name("pwm_v2_0")->reg_base;
-    regval = getreg32(reg_base + PWM_MC0_PERIOD_OFFSET);
-    tmp = (regval & PWM_PERIOD_MASK) >> PWM_PERIOD_SHIFT;
-    period = (float)tmp;
-
-    uint32_t period_hz = 1000000 / period;
-
-    regval = getreg32(reg_base + PWM_MC0_CH0_THRE_OFFSET + channel * 4);
-    uint16_t high_threhold = regval >> 16;
-    uint16_t low_threhold = regval;
-
-    configuration->period = 1000000000 / period_hz;
-
-    configuration->pulse = high_threhold;
-
-    return RT_EOK;
-}
-
-static rt_err_t _pwm_control(struct rt_device_pwm *device, int cmd, void *arg)
-{
-    struct rt_pwm_configuration *configuration = (struct rt_pwm_configuration *)arg;
-
-    rt_uint32_t channel = 0;
-
-    channel = configuration->channel;
-
-    if (channel >= 4)
-        return -RT_EINVAL;
-
-    struct bflb_device_s* pwm = bflb_device_get_by_name("pwm_v2_0");
-    switch (cmd)
-    {
-    case ACT_CMD_CHANNEL_ENABLE:
-      bflb_pwm_v2_channel_positive_start(pwm, channel);
-      bflb_pwm_v2_channel_negative_start(pwm, channel);
-      return RT_EOK;
-    case ACT_CMD_CHANNEL_DISABLE:
-      bflb_pwm_v2_channel_positive_stop(pwm, channel);
-      bflb_pwm_v2_channel_negative_stop(pwm, channel);
-      return RT_EOK;
-    case ACT_CMD_SET_PROTOCOL:
-      return _pwm_set(channel, configuration);
-    default:
-        return -RT_EINVAL;
-    }
-}
-
 rt_inline void __read_pwm(uint8_t chan_id, float *dc) {
   *dc = __pwm_dc[chan_id];
 }
@@ -203,16 +110,6 @@ static rt_err_t pwm_config(actuator_dev_t dev,
 
 static rt_err_t pwm_control(actuator_dev_t dev, int cmd, void *arg) {
 
-  struct rt_pwm_configuration *configuration =
-      (struct rt_pwm_configuration *)arg;
-
-  rt_uint32_t channel = 0;
-
-  channel = configuration->channel;
-
-  if (channel >= 4)
-    return -RT_EINVAL;
-
   struct bflb_device_s *pwm = bflb_device_get_by_name("pwm_v2_0");
 
   rt_err_t ret = RT_EOK;
@@ -220,12 +117,10 @@ static rt_err_t pwm_control(actuator_dev_t dev, int cmd, void *arg) {
   switch (cmd) {
   case ACT_CMD_CHANNEL_ENABLE:
     /* set to lowest pwm before open */
-    bflb_pwm_v2_channel_positive_start(pwm, channel);
-    bflb_pwm_v2_channel_negative_start(pwm, channel);
+    bflb_pwm_v2_start(pwm);
     break;
   case ACT_CMD_CHANNEL_DISABLE:
-    bflb_pwm_v2_channel_positive_stop(pwm, channel);
-    bflb_pwm_v2_channel_negative_stop(pwm, channel);
+    bflb_pwm_v2_stop(pwm);
     break;
   case ACT_CMD_SET_PROTOCOL:
     /* TODO: Support dshot */
@@ -268,7 +163,7 @@ static rt_size_t pwm_write(actuator_dev_t dev, rt_uint16_t chan_sel,
 
       val = *index;
       dc = (float)(val * __pwm_freq) / 1000000.0f; // calculate pwm duty cycle
-      LOG_E("PWM set dc:%f", dc);
+      // LOG_E("PWM set dc:%f", dc);
       if (dc > cfg.period) {
         LOG_E("Duty cycle exceeded the period.");
         return RT_ERROR;
@@ -281,12 +176,6 @@ static rt_size_t pwm_write(actuator_dev_t dev, rt_uint16_t chan_sel,
 
   return size;
 }
-
-// static struct rt_pwm_ops _pwm_ops =
-// {
-//     _pwm_control
-// };
-// static struct rt_device_pwm pwm_device;
 
 const static struct actuator_ops __act_ops = {.act_config = pwm_config,
                                               .act_control = pwm_control,
@@ -335,14 +224,14 @@ int rt_hw_pwm_init(void)
     bflb_pwm_v2_channel_init(pwm, PWM_CH1, &ch_cfg[1]);
     bflb_pwm_v2_channel_init(pwm, PWM_CH2, &ch_cfg[2]);
     bflb_pwm_v2_channel_init(pwm, PWM_CH3, &ch_cfg[3]);
-    bflb_pwm_v2_channel_positive_start(pwm, PWM_CH0);
-    bflb_pwm_v2_channel_negative_start(pwm, PWM_CH0);
-    bflb_pwm_v2_channel_positive_start(pwm, PWM_CH1);
-    bflb_pwm_v2_channel_negative_start(pwm, PWM_CH1);
-    bflb_pwm_v2_channel_positive_start(pwm, PWM_CH2);
-    bflb_pwm_v2_channel_negative_start(pwm, PWM_CH2);
-    bflb_pwm_v2_channel_positive_start(pwm, PWM_CH3);
-    bflb_pwm_v2_channel_negative_start(pwm, PWM_CH3);
+    // bflb_pwm_v2_channel_positive_start(pwm, PWM_CH0);
+    // bflb_pwm_v2_channel_negative_start(pwm, PWM_CH0);
+    // bflb_pwm_v2_channel_positive_start(pwm, PWM_CH1);
+    // bflb_pwm_v2_channel_negative_start(pwm, PWM_CH1);
+    // bflb_pwm_v2_channel_positive_start(pwm, PWM_CH2);
+    // bflb_pwm_v2_channel_negative_start(pwm, PWM_CH2);
+    // bflb_pwm_v2_channel_positive_start(pwm, PWM_CH3);
+    // bflb_pwm_v2_channel_negative_start(pwm, PWM_CH3);
     // bflb_pwm_v2_start(pwm);
 
     // result = rt_device_pwm_register(&pwm_device, "pwm", &_pwm_ops, 0);
