@@ -114,7 +114,7 @@ fmt_err_t send_actuator_cmd(void)
         } else if (from_dev[i] == ACTUATOR_FROM_RC_CHANNELS) {
             if (has_poll_rc_channels == false) {
                 if (mcn_poll(_rc_channels_nod) == 0) {
-                    //return FMT_ERROR;
+                    return FMT_ERROR;
                 }
                 mcn_copy(MCN_HUB(rc_trim_channels), _rc_channels_nod, &rc_channel);
                 has_poll_rc_channels = true;

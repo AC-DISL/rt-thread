@@ -66,7 +66,7 @@ void task_vehicle_entry(void* parameter)
 // #if !defined(FMT_USING_HIL) && !defined(FMT_USING_SIH)
 //                 sensor_collect();
 // #endif
-//                 pilot_cmd_collect();
+                pilot_cmd_collect();
 //                 gcs_cmd_collect();
 //                 mission_data_collect();
 

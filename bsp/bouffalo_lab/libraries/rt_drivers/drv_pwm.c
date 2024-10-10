@@ -20,7 +20,9 @@
 
 #ifdef BSP_USING_PWM
 
-static uint32_t __pwm_freq;
+#define PWM_DEFAULT_FREQUENCY 500
+
+static uint32_t __pwm_freq = PWM_DEFAULT_FREQUENCY;
 static float __pwm_dc[PWM_V2_CH_MAX];
 
 static struct bflb_pwm_v2_config_s cfg;
@@ -78,16 +80,14 @@ rt_inline void __write_pwm(uint8_t chan_id, float dc) { //设置占空比
 
 static rt_err_t __set_pwm_frequency(uint16_t freq) {
 
-  if (freq < 50 || freq > 400) {
+  if (freq < 50 || freq > 500) {
     /* invalid frequency */
     return RT_EINVAL;
   }
 
   struct bflb_device_s *pwm = bflb_device_get_by_name("pwm_v2_0");
-  cfg.clk_div = cfg.clk_source / (cfg.period * freq);
-
   bflb_pwm_v2_init(pwm, &cfg);
-  __pwm_freq = freq;
+  // __pwm_freq = freq;
 
   for (uint8_t i = 0; i < PWM_V2_CH_MAX; i++) {
     __write_pwm(i, __pwm_dc[i]);
@@ -117,6 +117,10 @@ static rt_err_t pwm_control(actuator_dev_t dev, int cmd, void *arg) {
   switch (cmd) {
   case ACT_CMD_CHANNEL_ENABLE:
     /* set to lowest pwm before open */
+    for (uint8_t i = 0; i < PWM_V2_CH_MAX; i++) {
+          __write_pwm(i, 0.5);//相当于bflb_pwm_v2_channel_set_threshold(50)，50为cfg.period的一半，也就是电机刚好不转的状态
+    }
+
     bflb_pwm_v2_start(pwm);
     break;
   case ACT_CMD_CHANNEL_DISABLE:
@@ -162,8 +166,7 @@ static rt_size_t pwm_write(actuator_dev_t dev, rt_uint16_t chan_sel,
     if (chan_sel & (1 << i)) {
 
       val = *index;
-      dc = (float)(val * __pwm_freq) / 1000000.0f; // calculate pwm duty cycle
-      // LOG_E("PWM set dc:%f", dc);
+      dc = (float)(val * (80000000/(cfg.clk_div*cfg.period))) / 1000000.0f; // calculate pwm duty cycle
       if (dc > cfg.period) {
         LOG_E("Duty cycle exceeded the period.");
         return RT_ERROR;
@@ -214,8 +217,7 @@ int rt_hw_pwm_init(void)
     cfg.clk_source = BFLB_SYSTEM_PBCLK;
     cfg.clk_div = 1600;
     cfg.period = 100;
-    __pwm_freq = cfg.clk_source / (cfg.clk_div * cfg.period);
-    bflb_pwm_v2_init(pwm, &cfg); // 50hz
+    bflb_pwm_v2_init(pwm, &cfg); // 500hz
     bflb_pwm_v2_channel_set_threshold(pwm, PWM_CH0, 0, 50);
     bflb_pwm_v2_channel_set_threshold(pwm, PWM_CH1, 0, 50);
     bflb_pwm_v2_channel_set_threshold(pwm, PWM_CH2, 0, 50);
@@ -224,17 +226,15 @@ int rt_hw_pwm_init(void)
     bflb_pwm_v2_channel_init(pwm, PWM_CH1, &ch_cfg[1]);
     bflb_pwm_v2_channel_init(pwm, PWM_CH2, &ch_cfg[2]);
     bflb_pwm_v2_channel_init(pwm, PWM_CH3, &ch_cfg[3]);
-    // bflb_pwm_v2_channel_positive_start(pwm, PWM_CH0);
-    // bflb_pwm_v2_channel_negative_start(pwm, PWM_CH0);
-    // bflb_pwm_v2_channel_positive_start(pwm, PWM_CH1);
-    // bflb_pwm_v2_channel_negative_start(pwm, PWM_CH1);
-    // bflb_pwm_v2_channel_positive_start(pwm, PWM_CH2);
-    // bflb_pwm_v2_channel_negative_start(pwm, PWM_CH2);
-    // bflb_pwm_v2_channel_positive_start(pwm, PWM_CH3);
-    // bflb_pwm_v2_channel_negative_start(pwm, PWM_CH3);
-    // bflb_pwm_v2_start(pwm);
+    bflb_pwm_v2_channel_positive_start(pwm, PWM_CH0);
+    bflb_pwm_v2_channel_negative_start(pwm, PWM_CH0);
+    bflb_pwm_v2_channel_positive_start(pwm, PWM_CH1);
+    bflb_pwm_v2_channel_negative_start(pwm, PWM_CH1);
+    bflb_pwm_v2_channel_positive_start(pwm, PWM_CH2);
+    bflb_pwm_v2_channel_negative_start(pwm, PWM_CH2);
+    bflb_pwm_v2_channel_positive_start(pwm, PWM_CH3);
+    bflb_pwm_v2_channel_negative_start(pwm, PWM_CH3);
 
-    // result = rt_device_pwm_register(&pwm_device, "pwm", &_pwm_ops, 0);
     result =
         hal_actuator_register(&act_dev, "main_out", RT_DEVICE_FLAG_RDWR, NULL);
     if(result != RT_EOK)
