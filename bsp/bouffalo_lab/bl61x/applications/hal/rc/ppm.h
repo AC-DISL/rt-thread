@@ -23,7 +23,7 @@
 extern "C" {
 #endif
 
-#define MAX_PPM_CHANNEL 4
+#define MAX_PPM_CHANNEL 10
 
 typedef struct {
     uint8_t chan_id;

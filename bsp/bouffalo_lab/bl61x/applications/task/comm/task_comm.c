@@ -794,12 +794,12 @@ fmt_err_t mavlink_command_acknowledge(uint8_t chan, uint16_t command, uint8_t re
 static fmt_err_t task_mavgcs_init(void)
 {
     /* init mavproxy */
-    // FMT_TRY(mavproxy_init());
+    FMT_TRY(mavproxy_init());
 
-    // mavlink_system = mavproxy_get_system();
+    mavlink_system = mavproxy_get_system();
 
-    // /* init ground control station handler */
-    // FMT_TRY(mavgcs_init());
+    /* init ground control station handler */
+    FMT_TRY(mavgcs_init());
 
     return FMT_EOK;
 }
@@ -808,7 +808,7 @@ static void task_mavgcs_entry(void* parameter)
 {
     /* execute mavproxy main loop */
     printf("task_mavgcs_entry\n");
-    //mavproxy_channel_loop(MAVPROXY_GCS_CHAN);
+    mavproxy_channel_loop(MAVPROXY_GCS_CHAN);
 }
 
 static fmt_err_t task_mavobc_init(void)
