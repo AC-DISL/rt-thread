@@ -355,7 +355,7 @@ void bsp_initialize(void) {
   finsh_system_init();
   rt_kprintf("finsh_system_init compeleted\n");
   /* Mount finsh to console after finsh system init */
-  FMT_CHECK(console_enable_input());
+  //FMT_CHECK(console_enable_input());
 
   // #ifdef FMT_USING_UNIT_TEST
   //     utest_init();
@@ -400,7 +400,7 @@ void rt_hw_board_init(void)
 
     /* Set the shell console output device */
 #if defined(RT_USING_CONSOLE) && defined(RT_USING_DEVICE)
-    FMT_CHECK(console_init());
+    //FMT_CHECK(console_init());
 #endif
 
 #ifdef RT_USING_COMPONENTS_INIT
@@ -437,7 +437,7 @@ void bsp_post_initialize(void) {
   FMT_CHECK(actuator_init());
 
   // /* start device message queue work */
-  // FMT_CHECK(devmq_start_work());
+  FMT_CHECK(devmq_start_work());
 
   // /* initialize power management unit */
   // FMT_CHECK(pmu_init());

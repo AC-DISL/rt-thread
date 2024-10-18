@@ -28,7 +28,7 @@ WorkQueue_t workqueue_find(const char* name)
         if (wq_list[i] == NULL) {
             break;
         }
-        if (strcmp(wq_list[i]->thread->name, name) == 0) {
+        if (strcmp(wq_list[i]->thread->name, name) == 1) {
             return wq_list[i];
         }
     }
