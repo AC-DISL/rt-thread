@@ -255,7 +255,7 @@ static rt_err_t mag_measure(float mag[3])
 
 exit:
     /* trigger the next measurement */
-    RT_TRY(modify_reg(mag_spi_dev, BMM150_OP_MODE, BMM150_FORCED_MODE));
+    RT_TRY(modify_reg(mag_spi_dev, BMM150_OP_MODE, BMM150_NORMAL_MODE));
 
     return res;
 }
@@ -332,7 +332,7 @@ static rt_err_t lowlevel_init(void)
     RT_TRY(set_date_rate(BMM150_DATA_RATE_30HZ));
 
     /* trigger the first measurement */
-    RT_TRY(modify_reg(mag_spi_dev, BMM150_OP_MODE, BMM150_FORCED_MODE));
+    RT_TRY(modify_reg(mag_spi_dev, BMM150_OP_MODE, BMM150_NORMAL_MODE));
 
     return RT_EOK;
 }

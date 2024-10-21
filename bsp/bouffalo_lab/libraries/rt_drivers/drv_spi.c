@@ -396,6 +396,13 @@ static rt_err_t _spi_dma_xfer_rx(struct rt_spi_device *device,
 }
 #endif
 
+void print_uint8_buffer(const uint8_t *buffer, rt_size_t length) {
+    for (rt_size_t i = 0; i < length; i++) {
+        rt_kprintf("*************:%02X ", buffer[i]);
+    }
+    rt_kprintf("\n");
+}
+
 static rt_ssize_t spixfer(struct rt_spi_device *device,
                           struct rt_spi_message *message) {
   RT_ASSERT(device != RT_NULL);
@@ -417,19 +424,21 @@ static rt_ssize_t spixfer(struct rt_spi_device *device,
   }
 
   if (message->send_buf && message->recv_buf) {
-    rt_memset(message->recv_buf, 0x0, message->length);
+    rt_memset(message->recv_buf, 0x00, message->length);
 
     bflb_spi_poll_exchange(bl_spi->spi, (void *)message->send_buf,
                            (void *)message->recv_buf, message->length);
     message->length += strlen(message->recv_buf);
+    // print_uint8_buffer((uint8_t *)message->recv_buf, message->length);
   } else if (message->send_buf) {
 #if defined(BSP_SPI_TX_USING_DMA)
     result = _spi_dma_xfer_tx(device, message);
     if (result != RT_EOK)
       message->length = -1;
 #else
-    bflb_spi_poll_exchange(bl_spi->spi, (void *)message->send_buf, NULL,
+      bflb_spi_poll_exchange(bl_spi->spi, (void *)message->send_buf, NULL,
                            message->length);
+      // print_uint8_buffer((uint8_t *)message->send_buf, message->length);
 #endif
   } else if (message->recv_buf) {
     rt_memset(message->recv_buf, 0x0, message->length);
@@ -439,8 +448,9 @@ static rt_ssize_t spixfer(struct rt_spi_device *device,
     if (result != RT_EOK)
       message->length = -1;
 #else
-    bflb_spi_poll_exchange(bl_spi->spi, NULL, (void *)message->recv_buf,
-                           message->length);
+      bflb_spi_poll_exchange(bl_spi->spi, NULL, (void *)message->recv_buf,
+                           message->length); 
+      // print_uint8_buffer((uint8_t *)message->recv_buf, message->length);
 #endif
   } else {
     LOG_E("both send_buf and recv_buf is null!");
@@ -509,6 +519,24 @@ int rt_hw_spi_init(void) {
   bflb_gpio_init(gpio, SPI_MOSI_PIN,
                  GPIO_FUNC_SPI0 | GPIO_ALTERNATE | GPIO_PULLUP | GPIO_SMT_EN |
                      GPIO_DRV_1);
+  bflb_gpio_init(gpio, GPIO_PIN_0,
+                 GPIO_FUNC_SPI0 | GPIO_OUTPUT | GPIO_PULLUP | GPIO_SMT_EN |
+                     GPIO_DRV_1);
+  bflb_gpio_init(gpio, GPIO_PIN_12,
+                 GPIO_FUNC_SPI0 | GPIO_OUTPUT | GPIO_PULLUP | GPIO_SMT_EN |
+                     GPIO_DRV_1);
+  bflb_gpio_init(gpio, GPIO_PIN_20,
+                 GPIO_FUNC_SPI0 | GPIO_OUTPUT | GPIO_PULLUP | GPIO_SMT_EN |
+                     GPIO_DRV_1);
+  bflb_gpio_init(gpio, GPIO_PIN_28,
+                 GPIO_FUNC_SPI0 | GPIO_OUTPUT | GPIO_PULLUP | GPIO_SMT_EN |
+                     GPIO_DRV_1);
+
+  //default cs set high
+  bflb_gpio_set(gpio, GPIO_PIN_0);
+  bflb_gpio_set(gpio, GPIO_PIN_12);
+  bflb_gpio_set(gpio, GPIO_PIN_20);
+  bflb_gpio_set(gpio, GPIO_PIN_28);
 
   dev_spi.spi = bflb_device_get_by_name("spi0");
 
@@ -516,19 +544,6 @@ int rt_hw_spi_init(void) {
 
   ret = rt_spi_bus_register(&dev_spi.spi_bus, "spi0", &bl_spi_ops);
   RT_ASSERT(ret == RT_EOK);
-
-  bflb_gpio_init(gpio, GPIO_PIN_0,
-                 GPIO_FUNC_SPI0 | GPIO_ALTERNATE | GPIO_PULLUP | GPIO_SMT_EN |
-                     GPIO_DRV_1);
-  bflb_gpio_init(gpio, GPIO_PIN_12,
-                 GPIO_FUNC_SPI0 | GPIO_ALTERNATE | GPIO_PULLUP | GPIO_SMT_EN |
-                     GPIO_DRV_1);
-  bflb_gpio_init(gpio, GPIO_PIN_20,
-                 GPIO_FUNC_SPI0 | GPIO_ALTERNATE | GPIO_PULLUP | GPIO_SMT_EN |
-                     GPIO_DRV_1);
-  bflb_gpio_init(gpio, GPIO_PIN_28,
-                 GPIO_FUNC_SPI0 | GPIO_ALTERNATE | GPIO_PULLUP | GPIO_SMT_EN |
-                     GPIO_DRV_1);
 
   rt_hw_spi_device_attach("spi0", "spi0_dev0", GPIO_PIN_0);  // accel
   rt_hw_spi_device_attach("spi0", "spi0_dev1", GPIO_PIN_12); // gyro

@@ -298,15 +298,12 @@ static void systick_isr(void)
 void bsp_initialize(void) {
   /* start recording boot log */
   FMT_CHECK(boot_log_init());
-  rt_kprintf("boot_log_init compeleted\n");
 
   /* init uMCN */
   FMT_CHECK(mcn_init());
-  rt_kprintf("mcn_init compeleted\n");
 
   /* create workqueue */
   FMT_CHECK(workqueue_manager_init());
-  rt_kprintf("workqueue_manager_init compeleted\n");
 
   /* init storage devices */
 #ifdef BSP_USING_ON_CHIP_FLASH
@@ -317,7 +314,6 @@ void bsp_initialize(void) {
 
   /* init parameter system */
   FMT_CHECK(param_init());
-  rt_kprintf("param_init compeleted\n");
 
   //     /* init usbd_cdc */
   //     RT_CHECK(drv_usb_cdc_init());
@@ -335,17 +331,17 @@ void bsp_initialize(void) {
   //   FMT_CHECK(advertise_sensor_airspeed(0));
 #else
   /* init onboard sensors */
-  // RT_CHECK(drv_bmi088_init("spi0_dev1", "spi0_dev0", "gyro0", "accel0", 0));
-  // RT_CHECK(drv_bmm150_init("spi0_dev2", "mag0"));
-  // RT_CHECK(drv_spl06_init("spi0_dev3", "barometer"));
+  RT_CHECK(drv_bmi088_init("spi0_dev1", "spi0_dev0", "gyro0", "accel0", 0));
+  RT_CHECK(drv_bmm150_init("spi0_dev2", "mag0"));
+  RT_CHECK(drv_spl06_init("spi0_dev3", "barometer"));
   // RT_CHECK(gps_ubx_init("serial1", "gps"));
   // rt_kprintf("gps_ubx_init compeleted\n");
 
-  // /* register sensor to sensor hub */
-  // FMT_CHECK(register_sensor_imu("gyro0", "accel0", 0));
-  // // FMT_CHECK(register_sensor_imu("gyro1", "accel1", 1));
-  // FMT_CHECK(register_sensor_mag("mag0", 0));
-  // FMT_CHECK(register_sensor_barometer("barometer"));
+  /* register sensor to sensor hub */
+  FMT_CHECK(register_sensor_imu("gyro0", "accel0", 0));
+  // FMT_CHECK(register_sensor_imu("gyro1", "accel1", 1));
+  FMT_CHECK(register_sensor_mag("mag0", 0));
+  FMT_CHECK(register_sensor_barometer("barometer"));
   // FMT_CHECK(advertise_sensor_optflow(0));
   // FMT_CHECK(advertise_sensor_rangefinder(0));
 
@@ -353,7 +349,6 @@ void bsp_initialize(void) {
 
   //     /* init finsh */
   finsh_system_init();
-  rt_kprintf("finsh_system_init compeleted\n");
   /* Mount finsh to console after finsh system init */
   //FMT_CHECK(console_enable_input());
 

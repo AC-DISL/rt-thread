@@ -63,9 +63,9 @@ void task_vehicle_entry(void* parameter)
                 /* the model simulation start from 0, so we calcualtet the timestamp relative to start time */
                 timestamp = time_now - time_start;
 
-// #if !defined(FMT_USING_HIL) && !defined(FMT_USING_SIH)
-//                 sensor_collect();
-// #endif
+#if !defined(FMT_USING_HIL) && !defined(FMT_USING_SIH)
+                sensor_collect();
+#endif
                 pilot_cmd_collect();
                 gcs_cmd_collect();
 //                 mission_data_collect();
