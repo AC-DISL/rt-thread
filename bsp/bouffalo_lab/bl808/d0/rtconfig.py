@@ -40,7 +40,7 @@ if PLATFORM == 'gcc':
     OBJCPY  = PREFIX + 'objcopy'
 
     DEVICE  = ' -march=rv64imafdc -mabi=lp64 -mcmodel=medany'
-    CFLAGS  = DEVICE + ' -Wall -Wno-cpp -Wno-error=unused-function -Wno-error=unused-but-set-variable -Wno-error=unused-variable -Wno-error=deprecated-declarations -Wextra -Wno-unused-parameter -Wno-sign-compare'
+    CFLAGS  = DEVICE + ' -w -Wno-cpp -Wno-error=unused-function -Wno-error=unused-but-set-variable -Wno-error=unused-variable -Wno-error=deprecated-declarations -Wextra -Wno-unused-parameter -Wno-sign-compare'
     CFLAGS += ' -Wno-old-style-declaration -ffunction-sections -fdata-sections -fstrict-volatile-bitfields -fshort-enums -fcommon -ffreestanding -fno-strict-aliasing -fno-jump-tables -save-temps=obj'
     CFLAGS += ' -D_POSIX_SOURCE'
     CFLAGS += ' -DCFG_COMPONENT_BLOG_ENABLE=0 -DBFLB_USE_HAL_DRIVER -DCPU_D0 -DBL808 -DLOG_UART_ID_0'
