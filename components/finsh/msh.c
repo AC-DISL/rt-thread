@@ -55,20 +55,20 @@ int msh_help(int argc, char **argv)
 MSH_CMD_EXPORT_ALIAS(msh_help, help, RT-Thread shell help.);
 
 #ifdef MSH_USING_BUILT_IN_COMMANDS
-int cmd_ps(int argc, char **argv)
-{
-    extern long list_thread(void);
-    extern int list_module(void);
+// int cmd_ps(int argc, char **argv)
+// {
+//     extern long list_thread(void);
+//     extern int list_module(void);
 
-#ifdef RT_USING_MODULE
-    if ((argc == 2) && (strcmp(argv[1], "-m") == 0))
-        list_module();
-    else
-#endif
-        list_thread();
-    return 0;
-}
-MSH_CMD_EXPORT_ALIAS(cmd_ps, ps, List threads in the system.);
+// #ifdef RT_USING_MODULE
+//     if ((argc == 2) && (strcmp(argv[1], "-m") == 0))
+//         list_module();
+//     else
+// #endif
+//         list_thread();
+//     return 0;
+// }
+// MSH_CMD_EXPORT_ALIAS(cmd_ps, ps, List threads in the system.);
 
 #ifdef RT_USING_HEAP
 int cmd_free(int argc, char **argv)
