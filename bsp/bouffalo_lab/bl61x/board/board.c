@@ -334,8 +334,7 @@ void bsp_initialize(void) {
   RT_CHECK(drv_bmi088_init("spi0_dev1", "spi0_dev0", "gyro0", "accel0", 0));
   RT_CHECK(drv_bmm150_init("spi0_dev2", "mag0"));
   RT_CHECK(drv_spl06_init("spi0_dev3", "barometer"));
-  // RT_CHECK(gps_ubx_init("serial1", "gps"));
-  // rt_kprintf("gps_ubx_init compeleted\n");
+  RT_CHECK(gps_ubx_init("serial1", "gps"));
 
   /* register sensor to sensor hub */
   FMT_CHECK(register_sensor_imu("gyro0", "accel0", 0));
@@ -350,7 +349,7 @@ void bsp_initialize(void) {
   //     /* init finsh */
   finsh_system_init();
   /* Mount finsh to console after finsh system init */
-  //FMT_CHECK(console_enable_input());
+  FMT_CHECK(console_enable_input());
 
   // #ifdef FMT_USING_UNIT_TEST
   //     utest_init();
@@ -395,7 +394,7 @@ void rt_hw_board_init(void)
 
     /* Set the shell console output device */
 #if defined(RT_USING_CONSOLE) && defined(RT_USING_DEVICE)
-    //FMT_CHECK(console_init());
+    FMT_CHECK(console_init());
 #endif
 
 #ifdef RT_USING_COMPONENTS_INIT
@@ -423,7 +422,7 @@ void bsp_post_initialize(void) {
   FMT_CHECK(gcs_cmd_init());
 
   // /* init auto command */
-  //FMT_CHECK(auto_cmd_init());
+  // FMT_CHECK(auto_cmd_init());
 
   // /* init mission data */
   // FMT_CHECK(mission_data_init());

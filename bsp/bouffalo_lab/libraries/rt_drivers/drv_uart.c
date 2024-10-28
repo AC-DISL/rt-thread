@@ -299,7 +299,7 @@ int rt_hw_uart_init(void)
 
     serial->ops              = &_uart_ops;
     serial->config           = config;
-    serial->config.baud_rate = UART_DEFAULT_BAUDRATE;
+    serial->config.baud_rate = 38400;
 
     uart->bflb_device = bflb_device_get_by_name("uart1");
     bflb_gpio_uart_init(gpio, UART1_GPIO_TX, GPIO_UART_FUNC_UART1_TX);
@@ -307,7 +307,7 @@ int rt_hw_uart_init(void)
 
     /* register USART device */
     result = hal_serial_register(
-        serial, "serial1", RT_DEVICE_FLAG_RDWR | RT_DEVICE_FLAG_INT_RX, uart);
+        serial, "serial1", RT_DEVICE_FLAG_RDWR | RT_DEVICE_FLAG_STANDALONE | RT_DEVICE_FLAG_INT_RX, uart);
     RT_ASSERT(result == RT_EOK);
 #endif
 
@@ -332,3 +332,68 @@ int rt_hw_uart_init(void)
 #endif
     return 0;
 }
+
+int uart_test(void)
+{
+    struct bflb_device_s *uartx;
+    uartx = bflb_device_get_by_name("uart1");
+
+    struct bflb_uart_config_s cfg;
+
+    cfg.baudrate = 57600;
+    cfg.data_bits = UART_DATA_BITS_8;
+    cfg.stop_bits = UART_STOP_BITS_1;
+    cfg.parity = UART_PARITY_NONE;
+    cfg.flow_ctrl = 0;
+    cfg.tx_fifo_threshold = 7;
+    cfg.rx_fifo_threshold = 7;
+    bflb_uart_init(uartx, &cfg);
+
+    char tx_data = 'A';
+    bflb_uart_putchar(uartx, tx_data);
+    printf("Sent: %c\n", tx_data);
+
+    int rx_data;
+    while (1) {
+        rx_data = bflb_uart_getchar(uartx);
+        if (rx_data != -1) {
+            printf("Received: %c\n", rx_data);
+
+            if (rx_data == tx_data) {
+                printf("Data matches!\n");
+            } else {
+                printf("Data does not match!\n");
+            }
+            break; 
+        }
+    }
+
+    return 0;
+}
+MSH_CMD_EXPORT(uart_test, uart1 loopback test);
+
+int uart_rx_test(void)
+{
+    struct bflb_device_s *uartx;
+    uartx = bflb_device_get_by_name("uart1");
+
+    struct bflb_uart_config_s cfg;
+
+    cfg.baudrate = 57600;
+    cfg.data_bits = UART_DATA_BITS_8;
+    cfg.stop_bits = UART_STOP_BITS_1;
+    cfg.parity = UART_PARITY_NONE;
+    cfg.flow_ctrl = 0;
+    cfg.tx_fifo_threshold = 7;
+    cfg.rx_fifo_threshold = 7;
+    bflb_uart_init(uartx, &cfg);
+
+    int ch;
+    while (1) {
+        ch = bflb_uart_getchar(uartx);
+        if (ch != -1) {
+            bflb_uart_putchar(uartx, ch);
+        }
+    }
+}
+MSH_CMD_EXPORT(uart_rx_test, uart1 loopback test);

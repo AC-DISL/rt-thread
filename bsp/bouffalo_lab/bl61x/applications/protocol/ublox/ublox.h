@@ -88,7 +88,7 @@ extern "C" {
 #define UBX_RX_NAV_TIMEUTC_VALID_UTCSTANDARD 0xF0 /**< utcStandard (0..15 = UTC standard identifier) */
 
 /* TX CFG-PRT message contents */
-#define UBX_TX_CFG_PRT_PORTID       0x01       /**< UART1 */
+#define UBX_TX_CFG_PRT_PORTID       0x01       /**< UART1 */  //0:DDC(I2C compatible) 1or2:UART 3:USB 4:SPI
 #define UBX_TX_CFG_PRT_MODE         0x000008D0 /**< 0b0000100011010000: 8N1 */
 #define UBX_TX_CFG_PRT_BAUDRATE     57600      /**< choose 38400 as GPS baudrate */
 #define UBX_TX_CFG_PRT_INPROTOMASK  0x01       /**< UBX in */
