@@ -14,6 +14,7 @@ OUTPUT_ARCH( "riscv" )
 INPUT(-lc)
 /* link with the standard GCC library */
 INPUT(-lgcc)
+INPUT(-lcsi_xt900p32f_dsp)
 /* configure the entry point */
 ENTRY(__start)
 
@@ -33,9 +34,9 @@ MEMORY
     ram_code  (wxa)   : ORIGIN = 0xA8000000, LENGTH = 4M
     itcm_memory (rx)  : ORIGIN = 0x62FC0000, LENGTH = 20K
     dtcm_memory (rx)  : ORIGIN = 0x62FC5000, LENGTH = 4K
-    nocache_ram_memory (!rx) : ORIGIN = 0x22FC6000, LENGTH = 44K+60K
-    ram_memory  (!rx) : ORIGIN = 0x62FE0000, LENGTH = 320K
-    ram_wifi  (wxa)   : ORIGIN = 0x23010000, LENGTH = 160K - __EM_SIZE
+    nocache_ram_memory (!rx) : ORIGIN = 0x62FC6000, LENGTH = 104K
+    ram_memory  (!rx) : ORIGIN = 0x62FC7000, LENGTH = 476K-4K-20K-104K
+    ram_wifi  (wxa)   : ORIGIN = 0x63010000, LENGTH = 4K - __EM_SIZE
 }
 
 SECTIONS

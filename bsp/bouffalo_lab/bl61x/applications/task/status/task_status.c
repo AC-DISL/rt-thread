@@ -248,17 +248,17 @@ static void update_pilot_cmd_status(void)
 
 fmt_err_t task_status_init(void)
 {
-    // fms_out_nod = mcn_subscribe(MCN_HUB(fms_output), NULL);
-    // RT_ASSERT(fms_out_nod != NULL);
+    fms_out_nod = mcn_subscribe(MCN_HUB(fms_output), NULL);
+    RT_ASSERT(fms_out_nod != NULL);
 
-    // ins_out_nod = mcn_subscribe(MCN_HUB(ins_output), NULL);
-    // RT_ASSERT(ins_out_nod != NULL);
+    ins_out_nod = mcn_subscribe(MCN_HUB(ins_output), NULL);
+    RT_ASSERT(ins_out_nod != NULL);
 
-    // pilot_cmd_nod = mcn_subscribe(MCN_HUB(pilot_cmd), NULL);
-    // RT_ASSERT(pilot_cmd_nod != NULL);
+    pilot_cmd_nod = mcn_subscribe(MCN_HUB(pilot_cmd), NULL);
+    RT_ASSERT(pilot_cmd_nod != NULL);
 
-    // mission_data_nod = mcn_subscribe(MCN_HUB(mission_data), NULL);
-    // RT_ASSERT(mission_data_nod != NULL);
+    mission_data_nod = mcn_subscribe(MCN_HUB(mission_data), NULL);
+    RT_ASSERT(mission_data_nod != NULL);
 
     return FMT_EOK;
 }
@@ -277,20 +277,20 @@ void task_status_entry(void* parameter)
     LOG_W("Actuator enabled for HIL, make sure you have removed all propellers!");
 #endif
 
-//     while (1) {
-//         // update pilot command status
-//         update_pilot_cmd_status();
+    while (1) {
+        // update pilot command status
+        update_pilot_cmd_status();
 
-//         // update FMS output status
-//         update_fms_status();
+        // update FMS output status
+        update_fms_status();
 
-//         // update INS output status
-//         update_ins_status();
+        // update INS output status
+        update_ins_status();
 
-//         PERIOD_EXECUTE(poll_bat_status, 500, pmu_poll_battery_status(););
+        PERIOD_EXECUTE(poll_bat_status, 500, pmu_poll_battery_status(););
 
-//         sys_msleep(10);
-//     }
+        sys_msleep(10);
+    }
 }
 
 TASK_EXPORT __fmt_task_desc = {

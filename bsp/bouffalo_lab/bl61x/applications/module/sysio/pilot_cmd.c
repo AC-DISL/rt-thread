@@ -191,14 +191,14 @@ static void mode_switch(Pilot_Cmd_Bus* pilot_cmd, int16_t* rc_channel)
             }
         }
 
-        // if (in_range) {
-        //     pilot_cmd->mode = pilotModes[i].mode;
-        //     /* Sync gcs mode with pilot_cmd mode */
-        //     GCS_Cmd_Bus gcs_cmd = gcs_cmd_get();
-        //     if (pilot_cmd->mode <= PilotMode_Offboard && gcs_cmd.mode != pilot_cmd->mode) {
-        //         gcs_set_mode(pilot_cmd->mode);
-        //     }
-        // }
+        if (in_range) {
+            pilot_cmd->mode = pilotModes[i].mode;
+            /* Sync gcs mode with pilot_cmd mode */
+            GCS_Cmd_Bus gcs_cmd = gcs_cmd_get();
+            if (pilot_cmd->mode <= PilotMode_Offboard && gcs_cmd.mode != pilot_cmd->mode) {
+                gcs_set_mode(pilot_cmd->mode);
+            }
+        }
     }
 }
 
