@@ -99,7 +99,7 @@ fmt_err_t send_actuator_cmd(void)
         if (from_dev[i] == ACTUATOR_FROM_CONTROL_OUT) {
             if (has_poll_control_out == false) {
                 if (mcn_poll(_control_out_nod) == false) {
-                    //return FMT_ERROR;
+                    return FMT_ERROR;
                 }
                 mcn_copy(MCN_HUB(control_output), _control_out_nod, &control_out);
                 has_poll_control_out = true;

@@ -66,9 +66,10 @@ void task_vehicle_entry(void* parameter)
 #if !defined(FMT_USING_HIL) && !defined(FMT_USING_SIH)
                 sensor_collect();
 #endif
+                
                 pilot_cmd_collect();
                 gcs_cmd_collect();
-//                 mission_data_collect();
+                mission_data_collect();
 
 // #ifdef FMT_USING_SIH
 //                 /* run Plant model */
@@ -89,19 +90,19 @@ void task_vehicle_entry(void* parameter)
 
 fmt_err_t task_vehicle_init(void)
 {
-// #if defined(FMT_USING_SIH)
-//     /* init plant model */
-//     plant_interface_init();
-// #endif
+#if defined(FMT_USING_SIH)
+    /* init plant model */
+    plant_interface_init();
+#endif
 
-//     /* init ins model */
-//     ins_interface_init();
+    /* init ins model */
+    ins_interface_init();
 
-//     /* init fms model */
-//     fms_interface_init();
+    /* init fms model */
+    fms_interface_init();
 
-//     /* init controller model */
-//     control_interface_init();
+    /* init controller model */
+    control_interface_init();
 
     /* create event */
     if (rt_event_init(&event_vehicle, "vehicle", RT_IPC_FLAG_FIFO) != RT_EOK) {

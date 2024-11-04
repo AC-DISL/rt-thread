@@ -248,3 +248,39 @@ uint32_t constrain_uint32(uint32_t amt, uint32_t low, uint32_t high)
 {
     return ((amt) < (low) ? (low) : ((amt) > (high) ? (high) : (amt)));
 }
+
+#define _BIT(n) (1<<(n))
+float fast_exp2(float x)
+{
+    union { uint32_t i; float f; } v;
+    float offset = (x < 0) ? 1.0f : 0.0f;
+    float clipp = (x < -126) ? -126.0f : x;
+    int w = clipp;
+    float z = clipp - w + offset;
+    v.i = (uint32_t)(_BIT(23) * (clipp + 121.2740575f + 27.7280233f / (4.84252568f - z) - 1.49012907f * z));
+    return v.f;
+}
+float fast_log2(float x)
+{
+    union { float f; uint32_t i; } vx;
+    union { uint32_t i; float f; } mx;
+    vx.f = x;
+    mx.i = (vx.i & 0x007FFFFF) | 0x3F000000;
+    float y = vx.i;
+    y *= 1.1920928955078125e-7f;
+    return y - 124.22551499f - 1.498030302f * mx.f - 1.72587999f / (0.3520887068f + mx.f);
+}
+float fast_powf(float base, float exponent)
+{
+    return fast_exp2(fast_log2(base)*exponent);
+}
+
+float fast_expf(float val) {
+    union
+    {
+        uint32_t i;
+        float f;
+    }v;
+    v.i = (1 << 23) * (1.4426950409 * val + 126.94201519f);
+    return v.f;
+}

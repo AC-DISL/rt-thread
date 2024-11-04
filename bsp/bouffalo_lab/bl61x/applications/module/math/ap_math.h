@@ -56,6 +56,9 @@ float constrain_float(float amt, float low, float high);
 uint16_t constrain_uint16(uint16_t amt, uint16_t low, uint16_t high);
 uint32_t constrain_uint32(uint32_t amt, uint32_t low, uint32_t high);
 
+float fast_powf(float base, float exponent);
+float fast_expf(float val);
+
 #ifdef __cplusplus
 }
 #endif
