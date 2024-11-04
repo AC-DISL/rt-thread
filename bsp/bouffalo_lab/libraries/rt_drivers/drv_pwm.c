@@ -56,8 +56,8 @@ struct bflb_pwm_v2_channel_config_s ch_cfg[PWM_V2_CH_MAX] = {
         .dead_time = 0,
     },
     {
-        .positive_polarity = PWM_POLARITY_ACTIVE_LOW,
-        .negative_polarity = PWM_POLARITY_ACTIVE_LOW,
+        .positive_polarity = PWM_POLARITY_ACTIVE_HIGH,
+        .negative_polarity = PWM_POLARITY_ACTIVE_HIGH,
         .positive_stop_state = PWM_STATE_ACTIVE,
         .negative_stop_state = PWM_STATE_ACTIVE,
         .positive_brake_state = PWM_STATE_ACTIVE,
@@ -210,7 +210,7 @@ int rt_hw_pwm_init(void)
                    GPIO_FUNC_PWM0 | GPIO_ALTERNATE | GPIO_PULLUP |
                        GPIO_SMT_EN | GPIO_DRV_1);
     bflb_gpio_init(gpio, GPIO_PIN_30, // CH3P
-                   GPIO_FUNC_PWM0 | GPIO_ALTERNATE | GPIO_PULLDOWN |
+                   GPIO_FUNC_PWM0 | GPIO_ALTERNATE | GPIO_PULLUP |
                        GPIO_SMT_EN | GPIO_DRV_1);
     struct bflb_device_s* pwm = bflb_device_get_by_name("pwm_v2_0");
 
