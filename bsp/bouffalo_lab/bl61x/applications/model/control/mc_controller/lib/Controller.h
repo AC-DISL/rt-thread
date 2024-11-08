@@ -3,36 +3,34 @@
  *
  * Code generated for Simulink model 'Controller'.
  *
- * Model version                  : 1.969
- * Simulink Coder version         : 9.0 (R2018b) 24-May-2018
- * C/C++ source code generated on : Sat Jun 15 11:07:41 2024
+ * Model version                  : 13.0
+ * Simulink Coder version         : 24.2 (R2024b) 21-Jun-2024
+ * C/C++ source code generated on : Sat Nov  2 09:12:11 2024
  *
  * Target selection: ert.tlc
- * Embedded hardware selection: ARM Compatible->ARM Cortex
+ * Embedded hardware selection: RISC-V->RV32I
  * Code generation objectives: Unspecified
  * Validation result: Not run
  */
 
-#ifndef RTW_HEADER_Controller_h_
-#define RTW_HEADER_Controller_h_
-#include <math.h>
-#include <string.h>
-#include <stddef.h>
+#ifndef Controller_h_
+#define Controller_h_
 #ifndef Controller_COMMON_INCLUDES_
-# define Controller_COMMON_INCLUDES_
+#define Controller_COMMON_INCLUDES_
 #include "rtwtypes.h"
 #endif                                 /* Controller_COMMON_INCLUDES_ */
 
 #include "Controller_types.h"
-#include "csi_math.h"
+#include <stddef.h>
+#include <string.h>
 
 /* Macros for accessing real-time model data structure */
 #ifndef rtmGetErrorStatus
-# define rtmGetErrorStatus(rtm)        ((rtm)->errorStatus)
+#define rtmGetErrorStatus(rtm)         ((rtm)->errorStatus)
 #endif
 
 #ifndef rtmSetErrorStatus
-# define rtmSetErrorStatus(rtm, val)   ((rtm)->errorStatus = (val))
+#define rtmSetErrorStatus(rtm, val)    ((rtm)->errorStatus = (val))
 #endif
 
 /* Block states (default storage) for system '<Root>' */
@@ -63,16 +61,16 @@ typedef struct {
 
 /* Invariant block signals (default storage) */
 typedef struct {
-  const real32_T VectorConcatenate3[3];/* '<S99>/Vector Concatenate3' */
-  const real32_T Constant;             /* '<S102>/Constant' */
+  const real32_T Constant[3];          /* '<S75>/Constant' */
   const real32_T Gain;                 /* '<S87>/Gain' */
-  const real32_T Constant_n[3];        /* '<S75>/Constant' */
+  const real32_T VectorConcatenate3[3];/* '<S99>/Vector Concatenate3' */
+  const real32_T Gain4;                /* '<S100>/Gain4' */
   const real32_T Square;               /* '<S100>/Square' */
   const real32_T d;                    /* '<S100>/Multiply' */
-  const real32_T Gain4;                /* '<S100>/Gain4' */
+  const real32_T Constant_g;           /* '<S102>/Constant' */
+  const real32_T Gain4_k;              /* '<S114>/Gain4' */
   const real32_T Square_g;             /* '<S114>/Square' */
   const real32_T d_n;                  /* '<S114>/Multiply' */
-  const real32_T Gain4_k;              /* '<S114>/Gain4' */
 } ConstB_Controller_T;
 
 /* Constant parameters (default storage) */
@@ -160,7 +158,7 @@ typedef struct {
 
 #ifndef CONSTP_CONTROLLER_T_VARIANT_EXISTS
 
-  char _rt_unused;
+  uchar_T rt_unused;
 
 #endif
 
@@ -179,7 +177,7 @@ typedef struct {
 
 /* Real-time Model Data Structure */
 struct tag_RTM_Controller_T {
-  const char_T *errorStatus;
+  const char_T * volatile errorStatus;
 };
 
 /* Block states (default storage) */
@@ -400,7 +398,7 @@ extern RT_MODEL_Controller_T *const Controller_M;
  * '<S117>' : 'Controller/Controller/Vertical_Control/Veloxity_Z_Controller/PID_Controller/P_Control'
  * '<S118>' : 'Controller/Controller/Vertical_Control/Veloxity_Z_Controller/PID_Controller/D_Control/DT Filter'
  */
-#endif                                 /* RTW_HEADER_Controller_h_ */
+#endif                                 /* Controller_h_ */
 
 /*
  * File trailer for generated code.

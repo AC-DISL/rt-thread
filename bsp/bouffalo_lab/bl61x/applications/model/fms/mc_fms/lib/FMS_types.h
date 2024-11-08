@@ -3,19 +3,38 @@
  *
  * Code generated for Simulink model 'FMS'.
  *
- * Model version                  : 1.2108
- * Simulink Coder version         : 9.0 (R2018b) 24-May-2018
- * C/C++ source code generated on : Sat Jun 15 10:50:29 2024
+ * Model version                  : 13.0
+ * Simulink Coder version         : 24.2 (R2024b) 21-Jun-2024
+ * C/C++ source code generated on : Sat Nov  2 09:15:13 2024
  *
  * Target selection: ert.tlc
- * Embedded hardware selection: ARM Compatible->ARM Cortex
+ * Embedded hardware selection: RISC-V->RV32I
  * Code generation objectives: Unspecified
  * Validation result: Not run
  */
 
-#ifndef RTW_HEADER_FMS_types_h_
-#define RTW_HEADER_FMS_types_h_
+#ifndef FMS_types_h_
+#define FMS_types_h_
 #include "rtwtypes.h"
+#ifndef DEFINED_TYPEDEF_FOR_FMS_Cmd_
+#define DEFINED_TYPEDEF_FOR_FMS_Cmd_
+
+/* enumeration of FMS command */
+typedef enum {
+  FMS_Cmd_None = 0,                    /* Default value */
+  FMS_Cmd_PreArm = 1000,
+  FMS_Cmd_Arm = 1001,
+  FMS_Cmd_Disarm = 1002,
+  FMS_Cmd_Takeoff = 1003,
+  FMS_Cmd_Land = 1004,
+  FMS_Cmd_Return = 1005,
+  FMS_Cmd_Pause = 1006,
+  FMS_Cmd_Continue = 1007,
+  FMS_Cmd_SetHome = 2000
+} FMS_Cmd;
+
+#endif
+
 #ifndef DEFINED_TYPEDEF_FOR_Pilot_Cmd_Bus_
 #define DEFINED_TYPEDEF_FOR_Pilot_Cmd_Bus_
 
@@ -210,25 +229,6 @@ typedef struct {
   uint32_T timestamp;
   uint16_T actuator_cmd[16];
 } Control_Out_Bus;
-
-#endif
-
-#ifndef DEFINED_TYPEDEF_FOR_FMS_Cmd_
-#define DEFINED_TYPEDEF_FOR_FMS_Cmd_
-
-/* enumeration of FMS command */
-typedef enum {
-  FMS_Cmd_None = 0,                    /* Default value */
-  FMS_Cmd_PreArm = 1000,
-  FMS_Cmd_Arm,
-  FMS_Cmd_Disarm,
-  FMS_Cmd_Takeoff,
-  FMS_Cmd_Land,
-  FMS_Cmd_Return,
-  FMS_Cmd_Pause,
-  FMS_Cmd_Continue,
-  FMS_Cmd_SetHome = 2000
-} FMS_Cmd;
 
 #endif
 
@@ -481,8 +481,8 @@ typedef enum {
   NAV_Cmd_None = 0,                    /* Default value */
   NAV_Cmd_Waypoint = 16,
   NAV_Cmd_Return = 20,
-  NAV_Cmd_Land,
-  NAV_Cmd_Takeoff,
+  NAV_Cmd_Land = 21,
+  NAV_Cmd_Takeoff = 22,
   NAV_Cmd_SetSpeed = 178
 } NAV_Cmd;
 
@@ -562,10 +562,18 @@ typedef struct {
 
 #endif
 
+#ifndef SS_UINT64
+#define SS_UINT64                      38
+#endif
+
+#ifndef SS_INT64
+#define SS_INT64                       39
+#endif
+
 /* Forward declaration for rtModel */
 typedef struct tag_RTM_FMS_T RT_MODEL_FMS_T;
 
-#endif                                 /* RTW_HEADER_FMS_types_h_ */
+#endif                                 /* FMS_types_h_ */
 
 /*
  * File trailer for generated code.

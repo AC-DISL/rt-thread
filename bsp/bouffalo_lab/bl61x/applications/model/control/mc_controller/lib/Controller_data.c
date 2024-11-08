@@ -3,32 +3,31 @@
  *
  * Code generated for Simulink model 'Controller'.
  *
- * Model version                  : 1.969
- * Simulink Coder version         : 9.0 (R2018b) 24-May-2018
- * C/C++ source code generated on : Sat Jun 15 11:07:41 2024
+ * Model version                  : 13.0
+ * Simulink Coder version         : 24.2 (R2024b) 21-Jun-2024
+ * C/C++ source code generated on : Sat Nov  2 09:12:11 2024
  *
  * Target selection: ert.tlc
- * Embedded hardware selection: ARM Compatible->ARM Cortex
+ * Embedded hardware selection: RISC-V->RV32I
  * Code generation objectives: Unspecified
  * Validation result: Not run
  */
 
 #include "Controller.h"
-#include "Controller_private.h"
 
 /* Invariant block signals (default storage) */
 const ConstB_Controller_T Controller_ConstB = {
-  { 0.0F, 0.0F, 1.0F },                /* '<S99>/Vector Concatenate3' */
-  0.0F,                                /* '<S102>/Constant' */
+  { 0.0F, 0.0F, 0.0F },                /* '<S75>/Constant' */
   19.1986F,                            /* '<S87>/Gain' */
 
-  { 0.0F, 0.0F, 0.0F },                /* '<S75>/Constant' */
+  { 0.0F, 0.0F, 1.0F },                /* '<S99>/Vector Concatenate3' */
+  -58.836F,                            /* '<S100>/Gain4' */
   0.00250000018F,                      /* '<S100>/Square' */
   0.14709F,                            /* '<S100>/Multiply' */
-  -58.836F,                            /* '<S100>/Gain4' */
+  0.0F,                                /* '<S102>/Constant' */
+  -78.448F,                            /* '<S114>/Gain4' */
   0.00250000018F,                      /* '<S114>/Square' */
-  0.196120009F,                        /* '<S114>/Multiply' */
-  -78.448F                             /* '<S114>/Gain4' */
+  0.196120009F                         /* '<S114>/Multiply' */
 };
 
 /* Constant parameters (default storage) */

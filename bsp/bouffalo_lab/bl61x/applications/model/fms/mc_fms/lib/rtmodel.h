@@ -3,25 +3,25 @@
  *
  * Code generated for Simulink model 'FMS'.
  *
- * Model version                  : 1.2108
- * Simulink Coder version         : 9.0 (R2018b) 24-May-2018
- * C/C++ source code generated on : Sat Jun 15 10:50:29 2024
+ * Model version                  : 13.0
+ * Simulink Coder version         : 24.2 (R2024b) 21-Jun-2024
+ * C/C++ source code generated on : Sat Nov  2 09:15:13 2024
  *
  * Target selection: ert.tlc
- * Embedded hardware selection: ARM Compatible->ARM Cortex
+ * Embedded hardware selection: RISC-V->RV32I
  * Code generation objectives: Unspecified
  * Validation result: Not run
  */
 
-#ifndef RTW_HEADER_rtmodel_h_
-#define RTW_HEADER_rtmodel_h_
+#ifndef rtmodel_h_
+#define rtmodel_h_
 #include "FMS.h"
 
 /* Macros generated for backwards compatibility  */
 #ifndef rtmGetStopRequested
-# define rtmGetStopRequested(rtm)      ((void*) 0)
+#define rtmGetStopRequested(rtm)       ((void*) 0)
 #endif
-#endif                                 /* RTW_HEADER_rtmodel_h_ */
+#endif                                 /* rtmodel_h_ */
 
 /*
  * File trailer for generated code.
