@@ -105,8 +105,7 @@ uint64_t systime_now_us(void)
 
     // return time_now_ms * (uint64_t)1000 + systick_us;
 
-    uint32_t time_now_ms = rt_tick_get();
-    return time_now_ms * (uint64_t)1000;
+    return bflb_mtimer_get_time_us();
 }
 
 /**
