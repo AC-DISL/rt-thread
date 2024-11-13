@@ -16,6 +16,7 @@
 #include <board_device.h>
 #include <firmament.h>
 #include <math.h>
+#include "csi_math.h"
 
 #include "module/filter/butter.h"
 #include "module/math/light_matrix.h"

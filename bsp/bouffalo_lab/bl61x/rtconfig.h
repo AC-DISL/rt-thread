@@ -44,6 +44,7 @@
 
 /* Kernel Device Object */
 
+#define RT_USING_MAVPROXY
 #define RT_USING_DEVICE
 #define RT_USING_CONSOLE
 #define RT_CONSOLEBUF_SIZE 128

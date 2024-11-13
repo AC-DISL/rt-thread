@@ -314,6 +314,18 @@ static void acc_calibration_reset(void)
     acc_calibration_init();
 }
 
+/*
+当加速度计的校准状态 mavcmd_calib_acc.status 为 0 时，进入校准初始化阶段，初始化相关变量，并设置加速度计的姿态为空闲状态。
+同时，发送 CAL_START_ACC 消息，提示用户开始进行加速度计的校准。
+
+进入校准过程中，函数首先检测是否发生抖动，然后通过 acc_position_detect() 函数检测当前加速度计的姿态，如果姿态不是空闲状态，则记录当前姿态。
+当姿态检测成功且没有发生抖动时，函数会更新加速度计的计数器 cnt[mavcmd_calib_acc.acc_pos]，并记录该姿态的偏置量和旋转矩阵。
+
+当计数器 cnt[mavcmd_calib_acc.acc_pos] 达到阈值 ACC_CALIBRATE_COUNT 时，说明当前姿态的校准已完成，函数会记录当前姿态的偏置量和旋转矩阵，
+并设置 done_flag[mavcmd_calib_acc.acc_pos] 为 true，表示当前姿态已完成校准。
+
+最后，函数会检查所有姿态是否都已完成校准，如果是，则进行最终的数据处理，计算出最终的偏置量和旋转矩阵，并将其记录到相应的参数中，同时重置校准状态。
+*/
 static void accel_calibration(void)
 {
     mavlink_message_t msg;
@@ -458,7 +470,21 @@ static void mag_calibration_reset(void)
     mavproxy_cmd_reset(MAVCMD_CALIBRATION_MAG);
     mag_calibration_init();
 }
+/*
+函数mag_calibration()主要分为三个阶段：
 
+第一个阶段：
+当mavcmd_calib_mag.status的值为0时，进入这个阶段。这个阶段做的工作是初始化磁力计的校准参数，将它们的值全部清零，并将状态设为1，同时发送CAL_START_MAG消息，
+提示用户开始进行磁力计的校准。
+
+第二个阶段：
+当mavcmd_calib_mag.status的值为1时，进入这个阶段。这个阶段的工作是通过陀螺仪的数据来检测飞机的姿态，直到飞机稳定在理想姿态为止。当飞机稳定在指定姿态后，
+函数开始采集磁力计的数据，并将数据存储在数组中。当磁力计数据采集完成后，函数将状态设置为2，并发送CAL_PROGRESS消息，提示用户当前的校准进度。
+
+第三个阶段：
+当mavcmd_calib_mag.status的值为2时，进入这个阶段。这个阶段的工作是通过磁力计数据以及陀螺仪数据进行解算，得到磁力计的校准参数。当整个过程完成后，函数将状态设置为3，
+并发送CAL_DONE消息，提示用户磁力计的校准已经完成。同时，函数将校准参数保存到对应的参数中。
+*/
 static void mag_calibration(void)
 {
     mavlink_message_t msg;
@@ -689,6 +715,14 @@ static void level_calibration_reset(void)
     level_calibration_init();
 }
 
+/*
+1.当 level 校准开始时，将 min_angle 和 max_angle 初始化为 ±100.0f，sample_cnt 置为 0，num_retry 置为 0。
+2.当有新的INS数据时，将其phi和theta值与当前的roll_off_current和pitch_off_current相加，得到board_roll_off和board_pitch_off，并将sample_cnt加1。
+3.记录当前INS数据的phi和theta值，用于检测抖动。
+4.如果抖动过大（max_angle - min_angle > 0.25f），则重新开始校准，num_retry加1。如果num_retry超过10次，则失败，并发送CAL_QGC_FAILED_MSG消息，重置level校准。
+5.当sample_cnt达到预设的阈值LEVEL_CALIBRATE_COUNT时，计算平均值board_roll_off和board_pitch_off，并进行下一步校准。
+6.如果board_roll_off或board_pitch_off的绝对值过大（>0.8f），则失败，发送CAL_QGC_CRITICAL消息，重置level校准。否则，将校准结果保存到PARAM_SET_FLOAT中，发送CAL_QGC_DONE_MSG消息，重置level校准。
+*/
 static void level_calibration(void)
 {
     INS_Out_Bus ins_out;
@@ -753,6 +787,7 @@ static void level_calibration(void)
             PARAM_SET_FLOAT(CALIB, LEVEL_YOFF, mavcmd_calib_level.board_pitch_off);
 
             mavlink_send_statustext(MAVLINK_STATUS_INFO, CAL_QGC_DONE_MSG, "level");
+            printf("Update Level Horizontal Offset [X, Y]: [%f, %f]\n", mavcmd_calib_level.board_roll_off, mavcmd_calib_level.board_pitch_off);
             //console_printf("Update Level Horizontal Offset: [%f %f]\n", mavcmd_calib_level.board_roll_off, mavcmd_calib_level.board_pitch_off);
 
             level_calibration_reset();

@@ -76,14 +76,12 @@ void task_vehicle_entry(void* parameter)
                 PERIOD_EXECUTE3(plant_step, plant_model_info.period, time_now, plant_interface_step(timestamp););
 #endif
     
-                rt_base_t level = rt_hw_interrupt_disable();
                 /* run INS model */
                 PERIOD_EXECUTE3(ins_step, ins_model_info.period, time_now, ins_interface_step(timestamp););
                 /* run FMS model */
                 PERIOD_EXECUTE3(fms_step, fms_model_info.period, time_now, fms_interface_step(timestamp););
                 /* run Controller model */
                 PERIOD_EXECUTE3(control_step, control_model_info.period, time_now, control_interface_step(timestamp););
-                rt_hw_interrupt_enable(level);
 
                 /* send actuator command */
                 send_actuator_cmd();

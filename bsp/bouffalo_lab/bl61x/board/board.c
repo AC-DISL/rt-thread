@@ -349,7 +349,10 @@ void bsp_initialize(void) {
   //     /* init finsh */
   finsh_system_init();
   /* Mount finsh to console after finsh system init */
+
+#ifndef RT_USING_MAVPROXY
   FMT_CHECK(console_enable_input());
+#endif
 
   // #ifdef FMT_USING_UNIT_TEST
   //     utest_init();
@@ -393,7 +396,7 @@ void rt_hw_board_init(void)
 #endif
 
     /* Set the shell console output device */
-#if defined(RT_USING_CONSOLE) && defined(RT_USING_DEVICE)
+#if !defined(RT_USING_MAVPROXY) && defined(RT_USING_CONSOLE) && defined(RT_USING_DEVICE)
     FMT_CHECK(console_init());
 #endif
 

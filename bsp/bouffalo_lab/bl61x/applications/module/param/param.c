@@ -886,6 +886,7 @@ fmt_err_t param_init(void)
     if (param_load(PARAM_FILE_NAME) != FMT_EOK) {
         console_printf("can not load %s, use default parameter value.\n", PARAM_FILE_NAME);
     }
+    param_save(PARAM_FILE_NAME);
 
     return FMT_EOK;
 }
