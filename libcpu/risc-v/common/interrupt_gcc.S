@@ -20,8 +20,7 @@
     .global SW_handler
 
 SW_handler:
-	li   t0,    0x08
-	csrc mstatus, t0
+	csrc mstatus, 0x08
 
 #ifdef ARCH_RISCV_FPU
     addi    sp, sp, -32 * FREGBYTES
