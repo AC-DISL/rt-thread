@@ -15,7 +15,6 @@ INPUT(-lc)
 /* link with the standard GCC library */
 INPUT(-lgcc)
 INPUT(-lcsi_xt900p32f_dsp)
-INPUT(-ldebug)
 /* configure the entry point */
 ENTRY(__start)
 

@@ -30,6 +30,7 @@ src     = Split("""
     src/flash/bflb_xip_sflash.c
     src/flash/bflb_sflash.c
     src/flash/bflb_sf_ctrl.c
+    src/bflb_spi.c
     src/bflb_irq.c
     src/bflb_l1c.c
     src/bflb_mtimer.c
