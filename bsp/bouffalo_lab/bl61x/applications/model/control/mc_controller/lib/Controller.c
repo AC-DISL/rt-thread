@@ -20,6 +20,7 @@
 #include "rtwtypes.h"
 #include <string.h>
 #include "Controller_private.h"
+#include <compiler/compiler_ld.h>
 
 /* Exported block parameters */
 struct_2EnWz3ceFwjQa7SDRNn3C CONTROL_PARAM = {
@@ -121,7 +122,7 @@ const Control_Out_Bus Controller_rtZControl_Out_Bus = { 0U,/* timestamp */
 };
 
 /* Model step function */
-void Controller_step(void)
+void ATTR_TCM_SECTION Controller_step(void)
 {
   real32_T rtb_VectorConcatenate[9];
   real32_T rtb_Add3;

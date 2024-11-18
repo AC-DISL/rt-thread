@@ -23,6 +23,7 @@
 #include <stddef.h>
 #include "zero_crossing_types.h"
 #include <float.h>
+#include <compiler/compiler_ld.h>
 
 /* Named constants for Chart: '<S430>/Motion Status' */
 #define FMS_IN_Brake                   ((uint8_T)1U)
@@ -296,32 +297,32 @@ static RT_MODEL_FMS_T FMS_M_;
 RT_MODEL_FMS_T *const FMS_M = &FMS_M_;
 
 /* Forward declaration for local functions */
-static void FMS_Mission(void);
-static void FMS_Offboard(void);
-static void FMS_Position(void);
-static void FMS_sf_msg_send_M(void);
-static boolean_T FMS_CheckCmdValid(FMS_Cmd cmd_in, PilotMode mode_in, uint32_T
+static void ATTR_TCM_SECTION FMS_Mission(void);
+static void ATTR_TCM_SECTION FMS_Offboard(void);
+static void ATTR_TCM_SECTION FMS_Position(void);
+static void ATTR_TCM_SECTION FMS_sf_msg_send_M(void);
+static boolean_T ATTR_TCM_SECTION FMS_CheckCmdValid(FMS_Cmd cmd_in, PilotMode mode_in, uint32_T
   ins_flag);
-static boolean_T FMS_BottomRight(real32_T pilot_cmd_stick_yaw, real32_T
+static boolean_T ATTR_TCM_SECTION FMS_BottomRight(real32_T pilot_cmd_stick_yaw, real32_T
   pilot_cmd_stick_throttle);
-static boolean_T FMS_BottomLeft(real32_T pilot_cmd_stick_yaw, real32_T
+static boolean_T ATTR_TCM_SECTION FMS_BottomLeft(real32_T pilot_cmd_stick_yaw, real32_T
   pilot_cmd_stick_throttle);
-static boolean_T FMS_sf_msg_pop_M(void);
-static real32_T FMS_norm(const real32_T x[2]);
-static void FMS_Auto(void);
-static real_T FMS_getArmMode(PilotMode pilotMode);
-static void FMS_enter_internal_Assist(void);
-static void FMS_enter_internal_Auto(void);
-static void FMS_enter_internal_Arm(void);
-static void FMS_SubMode(void);
-static void FMS_exit_internal_Arm(void);
-static void FMS_Arm(void);
-static real_T FMS_ManualArmEvent(real32_T pilot_cmd_stick_throttle, uint32_T
+static boolean_T ATTR_TCM_SECTION FMS_sf_msg_pop_M(void);
+static real32_T ATTR_TCM_SECTION FMS_norm(const real32_T x[2]);
+static void ATTR_TCM_SECTION FMS_Auto(void);
+static real_T ATTR_TCM_SECTION FMS_getArmMode(PilotMode pilotMode);
+static void ATTR_TCM_SECTION FMS_enter_internal_Assist(void);
+static void ATTR_TCM_SECTION FMS_enter_internal_Auto(void);
+static void ATTR_TCM_SECTION FMS_enter_internal_Arm(void);
+static void ATTR_TCM_SECTION FMS_SubMode(void);
+static void ATTR_TCM_SECTION FMS_exit_internal_Arm(void);
+static void ATTR_TCM_SECTION FMS_Arm(void);
+static real_T ATTR_TCM_SECTION FMS_ManualArmEvent(real32_T pilot_cmd_stick_throttle, uint32_T
   pilot_cmd_mode);
-static void FMS_Vehicle(void);
-static void FMS_sf_msg_discard_M(void);
-static void FMS_c11_FMS(void);
-static void initialize_msg_local_queues_for(void);
+static void ATTR_TCM_SECTION FMS_Vehicle(void);
+static void ATTR_TCM_SECTION FMS_sf_msg_discard_M(void);
+static void ATTR_TCM_SECTION FMS_c11_FMS(void);
+static void ATTR_TCM_SECTION initialize_msg_local_queues_for(void);
 const FMS_Out_Bus FMS_rtZFMS_Out_Bus = { 0U,/* timestamp */
   0.0F,                                /* p_cmd */
   0.0F,                                /* q_cmd */
@@ -359,7 +360,7 @@ const FMS_Out_Bus FMS_rtZFMS_Out_Bus = { 0U,/* timestamp */
  *    '<S49>/Hold Control'
  *    '<S86>/Hold Control'
  */
-void FMS_HoldControl_Init(DW_HoldControl_FMS_T *localDW)
+void ATTR_TCM_SECTION FMS_HoldControl_Init(DW_HoldControl_FMS_T *localDW)
 {
   /* InitializeConditions for Delay: '<S432>/Delay' */
   localDW->icLoad = true;
@@ -373,7 +374,7 @@ void FMS_HoldControl_Init(DW_HoldControl_FMS_T *localDW)
  *    '<S49>/Hold Control'
  *    '<S86>/Hold Control'
  */
-void FMS_HoldControl_Reset(DW_HoldControl_FMS_T *localDW)
+void ATTR_TCM_SECTION FMS_HoldControl_Reset(DW_HoldControl_FMS_T *localDW)
 {
   /* InitializeConditions for Delay: '<S432>/Delay' */
   localDW->icLoad = true;
@@ -387,7 +388,7 @@ void FMS_HoldControl_Reset(DW_HoldControl_FMS_T *localDW)
  *    '<S49>/Hold Control'
  *    '<S86>/Hold Control'
  */
-void FMS_HoldControl(real32_T rtu_FMS_In, real32_T *rty_w_cmd_mPs,
+void ATTR_TCM_SECTION FMS_HoldControl(real32_T rtu_FMS_In, real32_T *rty_w_cmd_mPs,
                      DW_HoldControl_FMS_T *localDW)
 {
   /* Delay: '<S432>/Delay' incorporates:
@@ -420,7 +421,7 @@ void FMS_HoldControl(real32_T rtu_FMS_In, real32_T *rty_w_cmd_mPs,
  *    '<S86>/Brake Control'
  *    '<S98>/Brake Control'
  */
-void FMS_BrakeControl(real32_T *rty_psi_rate_cmd_radPs)
+void ATTR_TCM_SECTION FMS_BrakeControl(real32_T *rty_psi_rate_cmd_radPs)
 {
   /* SignalConversion generated from: '<S431>/psi_rate_cmd_radPs' incorporates:
    *  Constant: '<S431>/Brake Speed'
@@ -434,7 +435,7 @@ void FMS_BrakeControl(real32_T *rty_psi_rate_cmd_radPs)
  *    '<S349>/Move Control'
  *    '<S195>/Move Control'
  */
-void FMS_MoveControl_Init(DW_MoveControl_FMS_T *localDW)
+void ATTR_TCM_SECTION FMS_MoveControl_Init(DW_MoveControl_FMS_T *localDW)
 {
   /* InitializeConditions for DiscreteIntegrator: '<S436>/Integrator1' */
   localDW->Integrator1_DSTATE = 0.0F;
@@ -449,7 +450,7 @@ void FMS_MoveControl_Init(DW_MoveControl_FMS_T *localDW)
  *    '<S349>/Move Control'
  *    '<S195>/Move Control'
  */
-void FMS_MoveControl_Reset(DW_MoveControl_FMS_T *localDW)
+void ATTR_TCM_SECTION FMS_MoveControl_Reset(DW_MoveControl_FMS_T *localDW)
 {
   /* InitializeConditions for DiscreteIntegrator: '<S436>/Integrator1' */
   localDW->Integrator1_DSTATE = 0.0F;
@@ -464,7 +465,7 @@ void FMS_MoveControl_Reset(DW_MoveControl_FMS_T *localDW)
  *    '<S349>/Move Control'
  *    '<S195>/Move Control'
  */
-void FMS_MoveControl(real32_T rtu_FMS_In, real32_T *rty_w_cmd_mPs, const
+void ATTR_TCM_SECTION FMS_MoveControl(real32_T rtu_FMS_In, real32_T *rty_w_cmd_mPs, const
                      ConstB_MoveControl_FMS_T *localC, DW_MoveControl_FMS_T
                      *localDW)
 {
@@ -618,7 +619,7 @@ void FMS_MoveControl(real32_T rtu_FMS_In, real32_T *rty_w_cmd_mPs, const
  *    '<S350>/Motion Status'
  *    '<S196>/Motion Status'
  */
-void FMS_MotionStatus_Init(MotionState *rty_state, DW_MotionStatus_FMS_T
+void ATTR_TCM_SECTION FMS_MotionStatus_Init(MotionState *rty_state, DW_MotionStatus_FMS_T
   *localDW)
 {
   localDW->temporalCounter_i1 = 0U;
@@ -633,7 +634,7 @@ void FMS_MotionStatus_Init(MotionState *rty_state, DW_MotionStatus_FMS_T
  *    '<S350>/Motion Status'
  *    '<S196>/Motion Status'
  */
-void FMS_MotionStatus_Reset(MotionState *rty_state, DW_MotionStatus_FMS_T
+void ATTR_TCM_SECTION FMS_MotionStatus_Reset(MotionState *rty_state, DW_MotionStatus_FMS_T
   *localDW)
 {
   localDW->temporalCounter_i1 = 0U;
@@ -648,7 +649,7 @@ void FMS_MotionStatus_Reset(MotionState *rty_state, DW_MotionStatus_FMS_T
  *    '<S350>/Motion Status'
  *    '<S196>/Motion Status'
  */
-void FMS_MotionStatus(real32_T rtu_motion_req, real32_T rtu_speed, MotionState
+void ATTR_TCM_SECTION FMS_MotionStatus(real32_T rtu_motion_req, real32_T rtu_speed, MotionState
                       *rty_state, DW_MotionStatus_FMS_T *localDW)
 {
   if (localDW->temporalCounter_i1 < 255U) {
@@ -703,7 +704,7 @@ void FMS_MotionStatus(real32_T rtu_motion_req, real32_T rtu_speed, MotionState
  *    '<S205>/Hold Control'
  *    '<S111>/Hold Control'
  */
-void FMS_HoldControl_c_Init(DW_HoldControl_FMS_j_T *localDW)
+void ATTR_TCM_SECTION FMS_HoldControl_c_Init(DW_HoldControl_FMS_j_T *localDW)
 {
   /* InitializeConditions for Delay: '<S442>/Delay' */
   localDW->icLoad = true;
@@ -716,7 +717,7 @@ void FMS_HoldControl_c_Init(DW_HoldControl_FMS_j_T *localDW)
  *    '<S205>/Hold Control'
  *    '<S111>/Hold Control'
  */
-void FMS_HoldControl_k_Reset(DW_HoldControl_FMS_j_T *localDW)
+void ATTR_TCM_SECTION FMS_HoldControl_k_Reset(DW_HoldControl_FMS_j_T *localDW)
 {
   /* InitializeConditions for Delay: '<S442>/Delay' */
   localDW->icLoad = true;
@@ -729,7 +730,7 @@ void FMS_HoldControl_k_Reset(DW_HoldControl_FMS_j_T *localDW)
  *    '<S205>/Hold Control'
  *    '<S111>/Hold Control'
  */
-void FMS_HoldControl_m(real32_T rtu_FMS_In, real32_T rtu_FMS_In_o, real32_T
+void ATTR_TCM_SECTION FMS_HoldControl_m(real32_T rtu_FMS_In, real32_T rtu_FMS_In_o, real32_T
   rtu_FMS_In_f, real32_T rty_uv_cmd_mPs[2], const ConstB_HoldControl_FMS_f_T
   *localC, DW_HoldControl_FMS_j_T *localDW)
 {
@@ -818,7 +819,7 @@ void FMS_HoldControl_m(real32_T rtu_FMS_In, real32_T rtu_FMS_In_o, real32_T
  *    '<S205>/Brake Control'
  *    '<S111>/Brake Control'
  */
-void FMS_BrakeControl_h(real32_T rty_uv_cmd_mPs[2])
+void ATTR_TCM_SECTION FMS_BrakeControl_h(real32_T rty_uv_cmd_mPs[2])
 {
   /* SignalConversion generated from: '<S441>/uv_cmd_mPs' incorporates:
    *  Constant: '<S441>/Brake Speed'
@@ -833,7 +834,7 @@ void FMS_BrakeControl_h(real32_T rty_uv_cmd_mPs[2])
  *    '<S371>/Move Control'
  *    '<S205>/Move Control'
  */
-void FMS_MoveControl_l_Init(DW_MoveControl_FMS_f_T *localDW)
+void ATTR_TCM_SECTION FMS_MoveControl_l_Init(DW_MoveControl_FMS_f_T *localDW)
 {
   /* InitializeConditions for DiscreteIntegrator: '<S449>/Integrator1' */
   localDW->Integrator1_DSTATE[0] = 0.0F;
@@ -854,7 +855,7 @@ void FMS_MoveControl_l_Init(DW_MoveControl_FMS_f_T *localDW)
  *    '<S371>/Move Control'
  *    '<S205>/Move Control'
  */
-void FMS_MoveControl_i_Reset(DW_MoveControl_FMS_f_T *localDW)
+void ATTR_TCM_SECTION FMS_MoveControl_i_Reset(DW_MoveControl_FMS_f_T *localDW)
 {
   /* InitializeConditions for DiscreteIntegrator: '<S449>/Integrator1' */
   localDW->Integrator1_DSTATE[0] = 0.0F;
@@ -875,7 +876,7 @@ void FMS_MoveControl_i_Reset(DW_MoveControl_FMS_f_T *localDW)
  *    '<S371>/Move Control'
  *    '<S205>/Move Control'
  */
-void FMS_MoveControl_j(real32_T rtu_FMS_In, real32_T rtu_FMS_In_o, real32_T
+void ATTR_TCM_SECTION FMS_MoveControl_j(real32_T rtu_FMS_In, real32_T rtu_FMS_In_o, real32_T
   rty_uv_cmd_mPs[2], const ConstB_MoveControl_FMS_i_T *localC,
   DW_MoveControl_FMS_f_T *localDW)
 {
@@ -1221,7 +1222,7 @@ void FMS_MoveControl_j(real32_T rtu_FMS_In, real32_T rtu_FMS_In_o, real32_T
  *    '<S372>/Motion State'
  *    '<S206>/Motion State'
  */
-void FMS_MotionState_Init(MotionState *rty_state, DW_MotionState_FMS_T *localDW)
+void ATTR_TCM_SECTION FMS_MotionState_Init(MotionState *rty_state, DW_MotionState_FMS_T *localDW)
 {
   localDW->temporalCounter_i1 = 0U;
   *rty_state = MotionState_Hold;
@@ -1235,7 +1236,7 @@ void FMS_MotionState_Init(MotionState *rty_state, DW_MotionState_FMS_T *localDW)
  *    '<S372>/Motion State'
  *    '<S206>/Motion State'
  */
-void FMS_MotionState_Reset(MotionState *rty_state, DW_MotionState_FMS_T *localDW)
+void ATTR_TCM_SECTION FMS_MotionState_Reset(MotionState *rty_state, DW_MotionState_FMS_T *localDW)
 {
   localDW->temporalCounter_i1 = 0U;
   *rty_state = MotionState_Hold;
@@ -1249,7 +1250,7 @@ void FMS_MotionState_Reset(MotionState *rty_state, DW_MotionState_FMS_T *localDW
  *    '<S372>/Motion State'
  *    '<S206>/Motion State'
  */
-void FMS_MotionState(real32_T rtu_motion_req, real32_T rtu_speed, MotionState
+void ATTR_TCM_SECTION FMS_MotionState(real32_T rtu_motion_req, real32_T rtu_speed, MotionState
                      *rty_state, DW_MotionState_FMS_T *localDW)
 {
   if (localDW->temporalCounter_i1 < 511) {
@@ -1302,7 +1303,7 @@ void FMS_MotionState(real32_T rtu_motion_req, real32_T rtu_speed, MotionState
  *    '<S416>/NearbyRefWP'
  *    '<S182>/NearbyRefWP'
  */
-void FMS_NearbyRefWP(const real32_T rtu_P2[2], const real32_T rtu_P3[2],
+void ATTR_TCM_SECTION FMS_NearbyRefWP(const real32_T rtu_P2[2], const real32_T rtu_P3[2],
                      real32_T rtu_L1, real32_T rty_P[2], real32_T *rty_d)
 {
   real32_T dis;
@@ -1327,7 +1328,7 @@ void FMS_NearbyRefWP(const real32_T rtu_P2[2], const real32_T rtu_P3[2],
  *    '<S416>/OutRegionRegWP'
  *    '<S182>/OutRegionRegWP'
  */
-void FMS_OutRegionRegWP(const real32_T rtu_P1[2], const real32_T rtu_P2[2],
+void ATTR_TCM_SECTION FMS_OutRegionRegWP(const real32_T rtu_P1[2], const real32_T rtu_P2[2],
   const real32_T rtu_P3[2], real32_T rty_P[2])
 {
   real32_T b_x_idx_0;
@@ -1357,7 +1358,7 @@ void FMS_OutRegionRegWP(const real32_T rtu_P1[2], const real32_T rtu_P2[2],
  *    '<S416>/SearchL1RefWP'
  *    '<S182>/SearchL1RefWP'
  */
-void FMS_SearchL1RefWP(const real32_T rtu_P1[2], const real32_T rtu_P2[2], const
+void ATTR_TCM_SECTION FMS_SearchL1RefWP(const real32_T rtu_P1[2], const real32_T rtu_P2[2], const
   real32_T rtu_P3[2], real32_T rtu_L1, real32_T rty_P[2], real32_T *rty_u)
 {
   real32_T A;
@@ -1419,7 +1420,7 @@ void FMS_SearchL1RefWP(const real32_T rtu_P1[2], const real32_T rtu_P2[2], const
  *    '<S70>/Hold Control'
  *    '<S98>/Hold Control'
  */
-void FMS_HoldControl_e_Init(DW_HoldControl_FMS_g_T *localDW)
+void ATTR_TCM_SECTION FMS_HoldControl_e_Init(DW_HoldControl_FMS_g_T *localDW)
 {
   /* InitializeConditions for Delay: '<S362>/Delay' */
   localDW->icLoad = true;
@@ -1432,7 +1433,7 @@ void FMS_HoldControl_e_Init(DW_HoldControl_FMS_g_T *localDW)
  *    '<S70>/Hold Control'
  *    '<S98>/Hold Control'
  */
-void FMS_HoldControl_kp_Reset(DW_HoldControl_FMS_g_T *localDW)
+void ATTR_TCM_SECTION FMS_HoldControl_kp_Reset(DW_HoldControl_FMS_g_T *localDW)
 {
   /* InitializeConditions for Delay: '<S362>/Delay' */
   localDW->icLoad = true;
@@ -1445,7 +1446,7 @@ void FMS_HoldControl_kp_Reset(DW_HoldControl_FMS_g_T *localDW)
  *    '<S70>/Hold Control'
  *    '<S98>/Hold Control'
  */
-void FMS_HoldControl_k(real32_T rtu_FMS_In, real32_T *rty_psi_rate_cmd_radPs,
+void ATTR_TCM_SECTION FMS_HoldControl_k(real32_T rtu_FMS_In, real32_T *rty_psi_rate_cmd_radPs,
   DW_HoldControl_FMS_g_T *localDW)
 {
   real32_T rtb_Abs_l;
@@ -1501,7 +1502,7 @@ void FMS_HoldControl_k(real32_T rtu_FMS_In, real32_T *rty_psi_rate_cmd_radPs,
  *    '<S70>/Move Control'
  *    '<S98>/Move Control'
  */
-void FMS_MoveControl_j_Init(DW_MoveControl_FMS_c_T *localDW)
+void ATTR_TCM_SECTION FMS_MoveControl_j_Init(DW_MoveControl_FMS_c_T *localDW)
 {
   /* InitializeConditions for DiscreteIntegrator: '<S368>/Integrator1' */
   localDW->Integrator1_DSTATE = 0.0F;
@@ -1517,7 +1518,7 @@ void FMS_MoveControl_j_Init(DW_MoveControl_FMS_c_T *localDW)
  *    '<S70>/Move Control'
  *    '<S98>/Move Control'
  */
-void FMS_MoveControl_l_Reset(DW_MoveControl_FMS_c_T *localDW)
+void ATTR_TCM_SECTION FMS_MoveControl_l_Reset(DW_MoveControl_FMS_c_T *localDW)
 {
   /* InitializeConditions for DiscreteIntegrator: '<S368>/Integrator1' */
   localDW->Integrator1_DSTATE = 0.0F;
@@ -1533,7 +1534,7 @@ void FMS_MoveControl_l_Reset(DW_MoveControl_FMS_c_T *localDW)
  *    '<S70>/Move Control'
  *    '<S98>/Move Control'
  */
-void FMS_MoveControl_b(real32_T rtu_FMS_In, real32_T *rty_psi_rate_cmd_radPs,
+void ATTR_TCM_SECTION FMS_MoveControl_b(real32_T rtu_FMS_In, real32_T *rty_psi_rate_cmd_radPs,
   const ConstB_MoveControl_FMS_f_T *localC, DW_MoveControl_FMS_c_T *localDW)
 {
   int32_T Integrator_DSTATE_tmp;
@@ -1686,7 +1687,7 @@ void FMS_MoveControl_b(real32_T rtu_FMS_In, real32_T *rty_psi_rate_cmd_radPs,
  *    '<S34>/Unknown'
  *    '<S30>/Unknown'
  */
-void FMS_Unknown(FMS_Out_Bus *rty_FMS_Out, const ConstB_Unknown_FMS_T *localC)
+void ATTR_TCM_SECTION FMS_Unknown(FMS_Out_Bus *rty_FMS_Out, const ConstB_Unknown_FMS_T *localC)
 {
   int32_T i;
   memset(rty_FMS_Out, 0, sizeof(FMS_Out_Bus));
@@ -1715,7 +1716,7 @@ void FMS_Unknown(FMS_Out_Bus *rty_FMS_Out, const ConstB_Unknown_FMS_T *localC)
  *    '<S71>/Motion State'
  *    '<S99>/Motion State'
  */
-void FMS_MotionState_l_Init(MotionState *rty_state, DW_MotionState_FMS_g_T
+void ATTR_TCM_SECTION FMS_MotionState_l_Init(MotionState *rty_state, DW_MotionState_FMS_g_T
   *localDW)
 {
   localDW->temporalCounter_i1 = 0U;
@@ -1730,7 +1731,7 @@ void FMS_MotionState_l_Init(MotionState *rty_state, DW_MotionState_FMS_g_T
  *    '<S71>/Motion State'
  *    '<S99>/Motion State'
  */
-void FMS_MotionState_j_Reset(MotionState *rty_state, DW_MotionState_FMS_g_T
+void ATTR_TCM_SECTION FMS_MotionState_j_Reset(MotionState *rty_state, DW_MotionState_FMS_g_T
   *localDW)
 {
   localDW->temporalCounter_i1 = 0U;
@@ -1745,7 +1746,7 @@ void FMS_MotionState_j_Reset(MotionState *rty_state, DW_MotionState_FMS_g_T
  *    '<S71>/Motion State'
  *    '<S99>/Motion State'
  */
-void FMS_MotionState_e(boolean_T rtu_motion_req, real32_T rtu_speed, MotionState
+void ATTR_TCM_SECTION FMS_MotionState_e(boolean_T rtu_motion_req, real32_T rtu_speed, MotionState
   *rty_state, DW_MotionState_FMS_g_T *localDW)
 {
   if (localDW->temporalCounter_i1 < 127) {
@@ -1798,7 +1799,7 @@ void FMS_MotionState_e(boolean_T rtu_motion_req, real32_T rtu_speed, MotionState
  *    '<S49>/Move Control'
  *    '<S86>/Move Control'
  */
-void FMS_MoveControl_l(real32_T rtu_FMS_In, real32_T rtu_FMS_In_l, uint32_T
+void ATTR_TCM_SECTION FMS_MoveControl_l(real32_T rtu_FMS_In, real32_T rtu_FMS_In_l, uint32_T
   rtu_FMS_In_i, real32_T *rty_w_cmd_mPs)
 {
   real32_T rtb_Gain1_kl;
@@ -1845,7 +1846,7 @@ void FMS_MoveControl_l(real32_T rtu_FMS_In, real32_T rtu_FMS_In_l, uint32_T
  *    '<S50>/Motion Status'
  *    '<S87>/Motion Status'
  */
-void FMS_MotionStatus_o_Init(MotionState *rty_state, DW_MotionStatus_FMS_a_T
+void ATTR_TCM_SECTION FMS_MotionStatus_o_Init(MotionState *rty_state, DW_MotionStatus_FMS_a_T
   *localDW)
 {
   localDW->temporalCounter_i1 = 0U;
@@ -1859,7 +1860,7 @@ void FMS_MotionStatus_o_Init(MotionState *rty_state, DW_MotionStatus_FMS_a_T
  *    '<S50>/Motion Status'
  *    '<S87>/Motion Status'
  */
-void FMS_MotionStatus_n_Reset(MotionState *rty_state, DW_MotionStatus_FMS_a_T
+void ATTR_TCM_SECTION FMS_MotionStatus_n_Reset(MotionState *rty_state, DW_MotionStatus_FMS_a_T
   *localDW)
 {
   localDW->temporalCounter_i1 = 0U;
@@ -1873,7 +1874,7 @@ void FMS_MotionStatus_n_Reset(MotionState *rty_state, DW_MotionStatus_FMS_a_T
  *    '<S50>/Motion Status'
  *    '<S87>/Motion Status'
  */
-void FMS_MotionStatus_b(boolean_T rtu_motion_req, real32_T rtu_speed,
+void ATTR_TCM_SECTION FMS_MotionStatus_b(boolean_T rtu_motion_req, real32_T rtu_speed,
   MotionState *rty_state, DW_MotionStatus_FMS_a_T *localDW)
 {
   if (localDW->temporalCounter_i1 < 255U) {
@@ -1921,7 +1922,7 @@ void FMS_MotionStatus_b(boolean_T rtu_motion_req, real32_T rtu_speed,
   /* End of Chart: '<S50>/Motion Status' */
 }
 
-real_T rt_modd(real_T u0, real_T u1)
+real_T ATTR_TCM_SECTION rt_modd(real_T u0, real_T u1)
 {
   real_T y;
   y = u0;
@@ -1952,7 +1953,7 @@ real_T rt_modd(real_T u0, real_T u1)
 }
 
 /* Output and update for function-call system: '<S5>/Vehicle.Arm.Auto.Mission.LLA2FLAT' */
-void F_VehicleArmAutoMissionLLA2FLAT(const real_T rtu_lla[3], const real_T
+void ATTR_TCM_SECTION F_VehicleArmAutoMissionLLA2FLAT(const real_T rtu_lla[3], const real_T
   rtu_llo[2], real_T rtu_href, real_T rtu_psio, real32_T rty_pos[3], const
   ConstB_VehicleArmAutoMissionL_T *localC)
 {
@@ -2096,7 +2097,7 @@ void F_VehicleArmAutoMissionLLA2FLAT(const real_T rtu_lla[3], const real_T
 }
 
 /* Function for Chart: '<Root>/SafeMode' */
-static void FMS_Mission(void)
+static void ATTR_TCM_SECTION FMS_Mission(void)
 {
   /* Inport: '<Root>/INS_Out' */
   if (((FMS_U.INS_Out.flag & 4U) != 0U) && ((FMS_U.INS_Out.flag & 16U) != 0U) &&
@@ -2148,7 +2149,7 @@ static void FMS_Mission(void)
 }
 
 /* Function for Chart: '<Root>/SafeMode' */
-static void FMS_Offboard(void)
+static void ATTR_TCM_SECTION FMS_Offboard(void)
 {
   /* Inport: '<Root>/INS_Out' */
   if (((FMS_U.INS_Out.flag & 4U) != 0U) && ((FMS_U.INS_Out.flag & 16U) != 0U) &&
@@ -2200,7 +2201,7 @@ static void FMS_Offboard(void)
 }
 
 /* Function for Chart: '<Root>/SafeMode' */
-static void FMS_Position(void)
+static void ATTR_TCM_SECTION FMS_Position(void)
 {
   /* Inport: '<Root>/INS_Out' */
   if (((FMS_U.INS_Out.flag & 4U) != 0U) && ((FMS_U.INS_Out.flag & 16U) != 0U) &&
@@ -2251,7 +2252,7 @@ static void FMS_Position(void)
   /* End of Inport: '<Root>/INS_Out' */
 }
 
-boolean_T FMS_emplace(Queue_FMS_Cmd *q, const FMS_Cmd *dataIn)
+boolean_T ATTR_TCM_SECTION FMS_emplace(Queue_FMS_Cmd *q, const FMS_Cmd *dataIn)
 {
   Msg_FMS_Cmd *msg;
   int32_T newTail;
@@ -2272,13 +2273,13 @@ boolean_T FMS_emplace(Queue_FMS_Cmd *q, const FMS_Cmd *dataIn)
 }
 
 /* Function for Chart: '<Root>/FMS State Machine' */
-static void FMS_sf_msg_send_M(void)
+static void ATTR_TCM_SECTION FMS_sf_msg_send_M(void)
 {
   FMS_emplace(&FMS_DW.Queue, &FMS_DW.M_msgReservedData);
 }
 
 /* Function for Chart: '<Root>/FMS State Machine' */
-static boolean_T FMS_CheckCmdValid(FMS_Cmd cmd_in, PilotMode mode_in, uint32_T
+static boolean_T ATTR_TCM_SECTION FMS_CheckCmdValid(FMS_Cmd cmd_in, PilotMode mode_in, uint32_T
   ins_flag)
 {
   boolean_T valid;
@@ -2331,20 +2332,20 @@ static boolean_T FMS_CheckCmdValid(FMS_Cmd cmd_in, PilotMode mode_in, uint32_T
 }
 
 /* Function for Chart: '<Root>/FMS State Machine' */
-static boolean_T FMS_BottomRight(real32_T pilot_cmd_stick_yaw, real32_T
+static boolean_T ATTR_TCM_SECTION FMS_BottomRight(real32_T pilot_cmd_stick_yaw, real32_T
   pilot_cmd_stick_throttle)
 {
   return (pilot_cmd_stick_throttle < -0.8) && (pilot_cmd_stick_yaw > 0.8);
 }
 
 /* Function for Chart: '<Root>/FMS State Machine' */
-static boolean_T FMS_BottomLeft(real32_T pilot_cmd_stick_yaw, real32_T
+static boolean_T ATTR_TCM_SECTION FMS_BottomLeft(real32_T pilot_cmd_stick_yaw, real32_T
   pilot_cmd_stick_throttle)
 {
   return (pilot_cmd_stick_throttle < -0.8) && (pilot_cmd_stick_yaw < -0.8);
 }
 
-boolean_T FMS_pop(Queue_FMS_Cmd *q, Msg_FMS_Cmd *elementOut)
+boolean_T ATTR_TCM_SECTION FMS_pop(Queue_FMS_Cmd *q, Msg_FMS_Cmd *elementOut)
 {
   boolean_T isPop;
   if (q->fHead == -1) {
@@ -2364,7 +2365,7 @@ boolean_T FMS_pop(Queue_FMS_Cmd *q, Msg_FMS_Cmd *elementOut)
 }
 
 /* Function for Chart: '<Root>/FMS State Machine' */
-static boolean_T FMS_sf_msg_pop_M(void)
+static boolean_T ATTR_TCM_SECTION FMS_sf_msg_pop_M(void)
 {
   boolean_T isPresent;
   if (FMS_DW.M_isValid) {
@@ -2390,7 +2391,7 @@ static boolean_T FMS_sf_msg_pop_M(void)
 }
 
 /* Function for Chart: '<Root>/FMS State Machine' */
-static real32_T FMS_norm(const real32_T x[2])
+static real32_T ATTR_TCM_SECTION FMS_norm(const real32_T x[2])
 {
   real32_T absxk;
   real32_T scale;
@@ -2420,7 +2421,7 @@ static real32_T FMS_norm(const real32_T x[2])
 }
 
 /* Function for Chart: '<Root>/FMS State Machine' */
-static void FMS_Auto(void)
+static void ATTR_TCM_SECTION FMS_Auto(void)
 {
   real_T lla[3];
   int32_T qY;
@@ -2713,7 +2714,7 @@ static void FMS_Auto(void)
 }
 
 /* Function for Chart: '<Root>/FMS State Machine' */
-static real_T FMS_getArmMode(PilotMode pilotMode)
+static real_T ATTR_TCM_SECTION FMS_getArmMode(PilotMode pilotMode)
 {
   real_T armMode;
   switch (pilotMode) {
@@ -2754,7 +2755,7 @@ static real_T FMS_getArmMode(PilotMode pilotMode)
 }
 
 /* Function for Chart: '<Root>/FMS State Machine' */
-static void FMS_enter_internal_Assist(void)
+static void ATTR_TCM_SECTION FMS_enter_internal_Assist(void)
 {
   switch (FMS_B.target_mode) {
    case PilotMode_Acro:
@@ -2784,7 +2785,7 @@ static void FMS_enter_internal_Assist(void)
 }
 
 /* Function for Chart: '<Root>/FMS State Machine' */
-static void FMS_enter_internal_Auto(void)
+static void ATTR_TCM_SECTION FMS_enter_internal_Auto(void)
 {
   int32_T qY;
   switch (FMS_B.target_mode) {
@@ -2835,7 +2836,7 @@ static void FMS_enter_internal_Auto(void)
 }
 
 /* Function for Chart: '<Root>/FMS State Machine' */
-static void FMS_enter_internal_Arm(void)
+static void ATTR_TCM_SECTION FMS_enter_internal_Arm(void)
 {
   real_T b;
   b = FMS_getArmMode(FMS_B.target_mode);
@@ -2859,7 +2860,7 @@ static void FMS_enter_internal_Arm(void)
 }
 
 /* Function for Chart: '<Root>/FMS State Machine' */
-static void FMS_SubMode(void)
+static void ATTR_TCM_SECTION FMS_SubMode(void)
 {
   real_T c;
   real32_T absxk;
@@ -3009,7 +3010,7 @@ static void FMS_SubMode(void)
 }
 
 /* Function for Chart: '<Root>/FMS State Machine' */
-static void FMS_exit_internal_Arm(void)
+static void ATTR_TCM_SECTION FMS_exit_internal_Arm(void)
 {
   if (FMS_DW.is_Arm == FMS_IN_Auto) {
     if (FMS_DW.is_Auto == FMS_IN_Mission) {
@@ -3030,7 +3031,7 @@ static void FMS_exit_internal_Arm(void)
 }
 
 /* Function for Chart: '<Root>/FMS State Machine' */
-static void FMS_Arm(void)
+static void ATTR_TCM_SECTION FMS_Arm(void)
 {
   real_T b;
   boolean_T b_out;
@@ -3183,7 +3184,7 @@ static void FMS_Arm(void)
 }
 
 /* Function for Chart: '<Root>/FMS State Machine' */
-static real_T FMS_ManualArmEvent(real32_T pilot_cmd_stick_throttle, uint32_T
+static real_T ATTR_TCM_SECTION FMS_ManualArmEvent(real32_T pilot_cmd_stick_throttle, uint32_T
   pilot_cmd_mode)
 {
   real_T trigger;
@@ -3209,7 +3210,7 @@ static real_T FMS_ManualArmEvent(real32_T pilot_cmd_stick_throttle, uint32_T
 }
 
 /* Function for Chart: '<Root>/FMS State Machine' */
-static void FMS_Vehicle(void)
+static void ATTR_TCM_SECTION FMS_Vehicle(void)
 {
   int32_T b_previousEvent;
   boolean_T guard1;
@@ -3439,13 +3440,13 @@ static void FMS_Vehicle(void)
 }
 
 /* Function for Chart: '<Root>/FMS State Machine' */
-static void FMS_sf_msg_discard_M(void)
+static void ATTR_TCM_SECTION FMS_sf_msg_discard_M(void)
 {
   FMS_DW.M_isValid = false;
 }
 
 /* Function for Chart: '<Root>/FMS State Machine' */
-static void FMS_c11_FMS(void)
+static void ATTR_TCM_SECTION FMS_c11_FMS(void)
 {
   int32_T b_previousEvent;
   FMS_DW.M_isValid = false;
@@ -3595,7 +3596,7 @@ static void FMS_c11_FMS(void)
   FMS_sf_msg_discard_M();
 }
 
-real32_T rt_remf(real32_T u0, real32_T u1)
+real32_T ATTR_TCM_SECTION rt_remf(real32_T u0, real32_T u1)
 {
   real32_T y;
   if ((u1 != 0.0F) && (u1 != truncf(u1))) {
@@ -3613,7 +3614,7 @@ real32_T rt_remf(real32_T u0, real32_T u1)
   return y;
 }
 
-void FMS_initQueue(Queue_FMS_Cmd *q, QueuePolicy_T policy, int32_T capacity,
+void ATTR_TCM_SECTION FMS_initQueue(Queue_FMS_Cmd *q, QueuePolicy_T policy, int32_T capacity,
                    Msg_FMS_Cmd *qPool)
 {
   q->fPolicy = policy;
@@ -3624,13 +3625,13 @@ void FMS_initQueue(Queue_FMS_Cmd *q, QueuePolicy_T policy, int32_T capacity,
 }
 
 /* Function for Chart: '<Root>/FMS State Machine' */
-static void initialize_msg_local_queues_for(void)
+static void ATTR_TCM_SECTION initialize_msg_local_queues_for(void)
 {
   FMS_initQueue(&FMS_DW.Queue, MSG_FIFO_QUEUE, 10, &FMS_DW.Msg[1]);
 }
 
 /* Model step function */
-void FMS_step(void)
+void ATTR_TCM_SECTION FMS_step(void)
 {
   real_T rtb_Sum2_tmp;
   real_T rtb_Sum3;

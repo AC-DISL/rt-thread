@@ -32,10 +32,10 @@ MEMORY
     fw_header_memory  (rx)  : ORIGIN = 0xA0000000 - 0x1000, LENGTH = 4K
     xip_memory  (rx)  : ORIGIN = 0xA0000000, LENGTH = 4M
     ram_code  (wxa)   : ORIGIN = 0xA8000000, LENGTH = 4M
-    itcm_memory (rx)  : ORIGIN = 0x62FC0000, LENGTH = 20K
-    dtcm_memory (rx)  : ORIGIN = 0x62FC5000, LENGTH = 4K
-    nocache_ram_memory (!rx) : ORIGIN = 0x62FC6000, LENGTH = 104K
-    ram_memory  (!rx) : ORIGIN = 0x62FC7000, LENGTH = 476K-4K-20K-104K
+    itcm_memory (rx)  : ORIGIN = 0x62FC0000, LENGTH = 80K
+    dtcm_memory (rx)  : ORIGIN = 0x62FD4000, LENGTH = 8K
+    nocache_ram_memory (!rx) : ORIGIN = 0x62FD6000, LENGTH = 4K
+    ram_memory  (!rx) : ORIGIN = 0x62FD7000, LENGTH = 476K-4K-80K-4K
     ram_wifi  (wxa)   : ORIGIN = 0x63010000, LENGTH = 4K - __EM_SIZE
 }
 

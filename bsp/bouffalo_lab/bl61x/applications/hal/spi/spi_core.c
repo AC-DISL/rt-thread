@@ -43,6 +43,7 @@
  * limitations under the License.
  *****************************************************************************/
 #include "hal/spi/spi.h"
+#include "compiler/compiler_ld.h"
 
 rt_err_t rt_spi_bus_register(struct rt_spi_bus* bus,
                              const char* name,
@@ -123,7 +124,7 @@ rt_err_t rt_spi_configure(struct rt_spi_device* device,
     return RT_EOK;
 }
 
-rt_err_t rt_spi_send_then_send(struct rt_spi_device* device,
+rt_err_t ATTR_TCM_SECTION rt_spi_send_then_send(struct rt_spi_device* device,
                                const void* send_buf1,
                                rt_size_t send_length1,
                                const void* send_buf2,
@@ -193,7 +194,7 @@ __exit:
     return result;
 }
 
-rt_err_t rt_spi_send_then_recv(struct rt_spi_device* device,
+rt_err_t ATTR_TCM_SECTION rt_spi_send_then_recv(struct rt_spi_device* device,
                                const void* send_buf,
                                rt_size_t send_length,
                                void* recv_buf,
@@ -263,7 +264,7 @@ __exit:
     return result;
 }
 
-rt_size_t rt_spi_transfer(struct rt_spi_device* device,
+rt_size_t ATTR_TCM_SECTION rt_spi_transfer(struct rt_spi_device* device,
                           const void* send_buf,
                           void* recv_buf,
                           rt_size_t length)
@@ -319,7 +320,7 @@ __exit:
     return result;
 }
 
-struct rt_spi_message* rt_spi_transfer_message(struct rt_spi_device* device,
+struct rt_spi_message* ATTR_TCM_SECTION rt_spi_transfer_message(struct rt_spi_device* device,
                                                struct rt_spi_message* message)
 {
     rt_err_t result;

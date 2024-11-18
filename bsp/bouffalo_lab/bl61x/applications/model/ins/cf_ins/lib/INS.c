@@ -19,6 +19,8 @@
 #include "csi_math.h"
 #include <string.h>
 #include "zero_crossing_types.h"
+#include <float.h>
+#include <compiler/compiler_ld.h>
 #ifndef UCHAR_MAX
 #include <limits.h>
 #endif
@@ -1196,7 +1198,7 @@ static void INS_Baro_Velocity(boolean_T rtu_TF_Data, real32_T *rty_vel_D_mPs,
 }
 
 /* Model step function */
-void INS_step(void)
+void ATTR_TCM_SECTION INS_step(void)
 {
   real_T rtb_DataTypeConversion1;
   real_T rtb_DataTypeConversion2;

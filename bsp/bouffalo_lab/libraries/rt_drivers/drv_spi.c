@@ -403,7 +403,7 @@ void print_uint8_buffer(const uint8_t *buffer, rt_size_t length) {
     rt_kprintf("\n");
 }
 
-static rt_ssize_t spixfer(struct rt_spi_device *device,
+static rt_ssize_t ATTR_TCM_SECTION spixfer(struct rt_spi_device *device,
                           struct rt_spi_message *message) {
   RT_ASSERT(device != RT_NULL);
   RT_ASSERT(device->bus != RT_NULL);
