@@ -75,7 +75,7 @@ static rt_err_t ppm_lowlevel_init(void) {
 
   // timer configurations
   struct bflb_timer_config_s cfg0;
-  cfg0.counter_mode = TIMER_COUNTER_MODE_PROLOAD; /* preload when match occur */
+  cfg0.counter_mode = TIMER_COUNTER_MODE_UP; /* preload when match occur */
   cfg0.clock_source = TIMER_CLKSRC_XTAL;          // 40M
   cfg0.clock_div = 39; /* for bl616/bl808/bl606p is 39, for bl702 is 31 */
   cfg0.trigger_comp_id = TIMER_COMP_ID_0;

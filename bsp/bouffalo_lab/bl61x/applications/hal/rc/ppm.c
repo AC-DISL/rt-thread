@@ -20,6 +20,33 @@
 
 /* 16-bit timer */
 #define GET_GAP(x, y) (x > y ? (x - y) : (0xFFFF - y + x))
+#define RC_CHANNELS_NUM 8
+#define MV_COUNT 25
+int raw_rc_value[RC_CHANNELS_NUM][MV_COUNT] = {0};
+
+int Mv_Ag(int channel, int count, int data)
+{
+    int rc_value = data;
+    for (int m = count - 1; m > 0; m--)
+    {
+        raw_rc_value[channel][count - m - 1] = raw_rc_value[channel][count - m];
+    }
+    raw_rc_value[channel][count - 1] = rc_value;
+
+    rc_value = 0;
+    int MovCount = 0;
+    for (int n = 0; n < count; n++)
+    {
+        if (raw_rc_value[channel][n] != 0)
+        {
+            MovCount++;
+            rc_value += raw_rc_value[channel][n];
+        }
+    }
+    rc_value = rc_value / MovCount;
+
+    return rc_value; // 返回滑动平均值
+}
 
 /**
  * @brief update ppm decoder status
@@ -52,15 +79,18 @@ void ppm_update(ppm_decoder_t* decoder, uint32_t ic_val)
             /* reveived all channel data */
             for (uint8_t i = 0; i < decoder->total_chan; i++) {
                 decoder->ppm_val[i] = decoder->scale_us * temp_val[i];
-                //rt_kprintf("********decoder->ppm_val[%d]:%d \n", i, decoder->ppm_val[i]);
 
                 if (decoder->ppm_val[i] < 1000) {
                     decoder->ppm_val[i] = 1000;
                 } else if (decoder->ppm_val[i] > 2000) {
                     decoder->ppm_val[i] = 2000;
                 }
+
+                if(i < 8) {
+                    decoder->ppm_val[i] = Mv_Ag(i, MV_COUNT, decoder->ppm_val[i]);
+                }
+                
             }
-            //rt_kprintf("=================================================\n");
 
             decoder->ppm_recvd = 1;
         }
