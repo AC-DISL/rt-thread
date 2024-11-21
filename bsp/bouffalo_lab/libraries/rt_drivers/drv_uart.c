@@ -19,7 +19,11 @@
 #define DBG_LVL DBG_WARNING
 #include <rtdbg.h>
 
+#ifndef FMT_USING_HIL
 #define UART_DEFAULT_BAUDRATE 57600
+#else
+#define UART_DEFAULT_BAUDRATE 2000000
+#endif
 // uart0
 #ifdef UART0_TX_USING_GPIO14
 #define UART0_GPIO_TX           GPIO_PIN_14

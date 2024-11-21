@@ -212,7 +212,11 @@ const char *param_info = "# FMT System Configuration File\n"
                          "    chan = 0\n"
                          "    type = \"serial\"\n"
                          "    name = \"serial0\"\n"
+                         #ifndef FMT_USING_HIL
                          "    baudrate = 57600\n"
+                         #else
+                         "    baudrate = 2000000\n"
+                         #endif
                          "\n"
                          "# Pilot CMD Configuration\n"
                          "[pilot-cmd]\n"
