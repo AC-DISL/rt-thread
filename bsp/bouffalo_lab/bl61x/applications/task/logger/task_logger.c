@@ -157,16 +157,12 @@ void task_logger_entry(void* parameter)
         rt_err = rt_event_recv(&_log_event, wait_set, RT_EVENT_FLAG_OR | RT_EVENT_FLAG_CLEAR, 20, &recv_set);
 
         if (rt_err == RT_EOK) {
-            if (recv_set & EVENT_MLOG_UPDATE) {
-                mlog_async_output();
-            }
 
             if (recv_set & EVENT_ULOG_UPDATE) {
                 ulog_async_output();
             }
         } else if (rt_err == -RT_ETIMEOUT) {
             /* if timeout, check if there are log data need to send */
-            mlog_async_output();
             ulog_async_output();
 
 #ifdef ENABLE_ULOG_FS_BACKEND
