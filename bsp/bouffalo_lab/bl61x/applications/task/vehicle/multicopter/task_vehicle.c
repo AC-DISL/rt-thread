@@ -30,6 +30,7 @@
 #include "task/logger/task_logger.h"
 
 #define EVENT_VEHICLE_UPDATE (1 << 0)
+#define STATUS_LED GPIO_PIN_27
 
 extern rt_device_t main_out_dev;
 extern rt_device_t aux_out_dev;
@@ -50,6 +51,11 @@ void task_vehicle_entry(void* parameter)
     rt_err_t res;
     rt_uint32_t recv_set = 0;
     uint32_t wait_set = EVENT_VEHICLE_UPDATE;
+    uint32_t loop_counter = 0;
+    bool LED_ON = false;
+    struct bflb_device_s *gpio;
+    gpio = bflb_device_get_by_name("gpio");
+    bflb_gpio_init(gpio, STATUS_LED, GPIO_OUTPUT | GPIO_PULLDOWN | GPIO_SMT_EN | GPIO_DRV_0);
     printf("task_vehicle_entry\n");
 
     while (1) {
@@ -86,6 +92,18 @@ void task_vehicle_entry(void* parameter)
                 /* send actuator command */
                 send_actuator_cmd();
         }
+
+            // Toggle GPIO27 every 1 second
+            loop_counter++;
+            if (loop_counter % 500 == 0) {
+                if (LED_ON) {
+                    bflb_gpio_reset(gpio, STATUS_LED);  // Reset GPIO pin low
+                    LED_ON = false;
+                } else {
+                    bflb_gpio_set(gpio, STATUS_LED);  // Set GPIO pin high
+                    LED_ON = true;
+                }
+            }
     }
 }
 
