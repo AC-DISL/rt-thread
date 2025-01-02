@@ -44,11 +44,11 @@
 
 /* Kernel Device Object */
 
-#define RT_USING_MAVPROXY
+// #define RT_USING_MAVPROXY
 #define RT_USING_DEVICE
 #define RT_USING_CONSOLE
 #define RT_CONSOLEBUF_SIZE 128
-#define RT_CONSOLE_DEVICE_NAME "serial0"
+#define RT_CONSOLE_DEVICE_NAME "serial1"
 #define RT_VER_NUM 0x50000
 #define ARCH_RISCV
 #define ARCH_RISCV_FPU
@@ -285,7 +285,7 @@
 
 /* General Purpose UARTs */
 
-#define BSP_USING_UART0
+// #define BSP_USING_UART0
 #define UART0_TX_USING_GPIO21
 #define UART0_RX_USING_GPIO22
 #define BSP_USING_UART1

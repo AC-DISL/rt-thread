@@ -197,7 +197,7 @@ fmt_err_t console_enable_input(void)
 fmt_err_t console_init(void)
 {
     /* console use serial0 by default */
-    console_dev = rt_device_find("serial0");
+    console_dev = rt_device_find("serial1");
     if (console_dev == RT_NULL) {
         /* can not find console device */
         return FMT_EEMPTY;

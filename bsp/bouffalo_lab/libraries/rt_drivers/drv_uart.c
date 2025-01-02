@@ -303,7 +303,7 @@ int rt_hw_uart_init(void)
 
     serial->ops              = &_uart_ops;
     serial->config           = config;
-    serial->config.baud_rate = 38400;
+    serial->config.baud_rate = 57600;
 
     uart->bflb_device = bflb_device_get_by_name("uart1");
     bflb_gpio_uart_init(gpio, UART1_GPIO_TX, GPIO_UART_FUNC_UART1_TX);

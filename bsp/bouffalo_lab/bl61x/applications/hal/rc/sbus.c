@@ -111,10 +111,18 @@ static const struct sbus_bit_pick sbus_decoder[SBUS_INPUT_CHANNELS][3] = {
 
 static bool sbus_decode(sbus_decoder_t* decoder, uint32_t frame_time)
 {
+    // for(int kk=0;kk<25;kk++){
+    //     rt_kprintf("%02X ",decoder->sbus_frame[kk]);
+    //     if(kk==24){
+    //         rt_kprintf("\n");
+    //     }
+    // }
+
     /* check frame boundary markers to avoid out-of-sync cases */
     if ((decoder->sbus_frame[0] != SBUS_START_SYMBOL)) {
         decoder->sbus_frame_drops++;
         decoder->sbus_decode_state = SBUS_DECODE_STATE_DESYNC;
+        rt_kprintf("\ndecode 1 false");
         return false;
     }
 
@@ -149,6 +157,7 @@ static bool sbus_decode(sbus_decoder_t* decoder, uint32_t frame_time)
         printf("DECODE FAIL: END MARKER\n");
 #endif
         decoder->sbus_decode_state = SBUS_DECODE_STATE_DESYNC;
+        rt_kprintf("\ndecode 2 false");
         return false;
     }
 
@@ -176,6 +185,9 @@ static bool sbus_decode(sbus_decoder_t* decoder, uint32_t frame_time)
 
         /* convert 0-2048 values to 1000-2000 ppm encoding in a not too sloppy fashion */
         decoder->sbus_val[channel] = (uint16_t)(value * SBUS_SCALE_FACTOR + .5f) + SBUS_SCALE_OFFSET;
+        // if(channel<=3){
+        // rt_kprintf("\ndecoder->sbus_val[%d] = %d",channel, decoder->sbus_val[channel]);
+        // }
     }
 
     /* decode switch channels if data fields are wide enough */
@@ -192,6 +204,7 @@ static bool sbus_decode(sbus_decoder_t* decoder, uint32_t frame_time)
     decoder->rc_count = chancount;
 
     /* decode and handle failsafe and frame-lost flags */
+    // rt_kprintf("\n %02X,   %02X,   %02X  ,%02X",decoder->sbus_frame[0],decoder->sbus_frame[1],decoder->sbus_frame[SBUS_FLAGS_BYTE],decoder->sbus_frame[24]);
     if (decoder->sbus_frame[SBUS_FLAGS_BYTE] & (1 << SBUS_FAILSAFE_BIT)) { /* failsafe */
         /* report that we failed to read anything valid off the receiver */
         decoder->sbus_failsafe = true;
@@ -272,6 +285,7 @@ static bool sbus_parse(sbus_decoder_t* decoder, uint8_t* frame, unsigned len)
 				 * decode it.
 				 */
             decode_ret = sbus_decode(decoder, decoder->last_rx_time);
+            rt_kprintf("\nparse 1:%d",decode_ret);
 
             /*
 				 * Offset recovery: If decoding failed, check if there is a second
@@ -389,6 +403,7 @@ static bool sbus_parse(sbus_decoder_t* decoder, uint8_t* frame, unsigned len)
             printf("UNKNOWN PROTO STATE");
 #endif
             decode_ret = false;
+            rt_kprintf("\nparse 2:%d",decode_ret);
         }
     }
 
@@ -442,6 +457,7 @@ bool sbus_update(sbus_decoder_t* decoder)
 	 */
     bool sbus_updated = sbus_parse(decoder, buf, ret);
     decoder->sbus_data_ready = sbus_updated && !decoder->sbus_failsafe && !decoder->sbus_frame_drop;
+    rt_kprintf("\n%d,   %d,   %d",sbus_updated,!decoder->sbus_failsafe, !decoder->sbus_frame_drop);
 
     return decoder->sbus_data_ready;
 }

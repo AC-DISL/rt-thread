@@ -20,7 +20,9 @@
 
 #include "bflb_gpio.h"
 #include "bflb_timer.h"
+#include "bflb_uart.h"
 #include "hal/rc/ppm.h"
+#include "hal/rc/sbus.h"
 #include "hal/rc/rc.h"
 
 #ifndef min // mod by prife
@@ -42,33 +44,67 @@
         2000,        /* maximal 2000us */                                      \
   }
 
+#define PPM_RECV GPIO_PIN_10
+#define PPM_COPY GPIO_PIN_11
+
 static ppm_decoder_t ppm_decoder;
 struct bflb_device_s *timer0;
 struct bflb_device_s *gpio;
 
+static sbus_decoder_t sbus_decoder;
+struct bflb_device_s *sbus_uart;
+
 void gpio_isr(int irq, void *arg) {
 
   rt_interrupt_enter();
-  uint32_t ic_val = bflb_timer_get_countervalue(timer0);
 
-  static int i = 0;
-  bool intstatus = bflb_gpio_get_intstatus(gpio, GPIO_PIN_10);
+  uint32_t ic_val = bflb_timer_capture_get_pulsewidth(timer0);
+
+  bool intstatus = bflb_gpio_get_intstatus(gpio, PPM_COPY);
   if (intstatus) {
-    bflb_gpio_int_clear(gpio, GPIO_PIN_10);
+    bflb_gpio_int_clear(gpio, PPM_COPY);
     ppm_update(&ppm_decoder, ic_val); // PPM信号捕获
   }
 
   rt_interrupt_leave();
 }
 
+
+void uart_isr(int irq, void *arg)
+{
+    uint8_t ch;
+    /* enter interrupt */
+    rt_interrupt_enter();
+
+    uint32_t intstatus = bflb_uart_get_intstatus(sbus_uart);
+
+    if (intstatus & UART_INTSTS_RX_FIFO) {
+        while (bflb_uart_rxavailable(sbus_uart)) {
+            ch = bflb_uart_getchar(sbus_uart);
+            sbus_input(&sbus_decoder, &ch, 1);
+        }
+
+        if (!sbus_islock(&sbus_decoder)) {
+            sbus_update(&sbus_decoder);
+        }
+
+        bflb_uart_int_clear(sbus_uart, UART_INTSTS_RX_FIFO);
+    }
+
+    /* leave interrupt */
+    rt_interrupt_leave();
+}
+
 //定时器用于记录中断触发的时间戳，配置输入捕获通道用于触发中断
 static rt_err_t ppm_lowlevel_init(void) {
 
+  //分一路PPM信号至GPIO11，用于产生上升沿中断
   gpio = bflb_device_get_by_name("gpio");
+  bflb_gpio_init(gpio, PPM_COPY, GPIO_INPUT | GPIO_PULLUP | GPIO_SMT_EN | GPIO_DRV_0);
 
-  bflb_gpio_int_init(gpio, GPIO_PIN_10,
+  bflb_gpio_int_init(gpio, PPM_COPY,
                      GPIO_INT_TRIG_MODE_SYNC_RISING_EDGE); //上升沿触发
-  bflb_gpio_int_mask(gpio, GPIO_PIN_10, false);
+  bflb_gpio_int_mask(gpio, PPM_COPY, false);
 
   bflb_irq_attach(gpio->irq_num, gpio_isr, gpio);
   bflb_irq_enable(gpio->irq_num);
@@ -79,17 +115,51 @@ static rt_err_t ppm_lowlevel_init(void) {
   cfg0.clock_source = TIMER_CLKSRC_XTAL;          // 40M
   cfg0.clock_div = 39; /* for bl616/bl808/bl606p is 39, for bl702 is 31 */
   cfg0.trigger_comp_id = TIMER_COMP_ID_0;
-  cfg0.comp0_val = 65535;   /* match value 0  */
-  cfg0.comp1_val = 1500000; /* match value 1 */
-  cfg0.comp2_val = 2500000; /* match value 2 */
+  cfg0.comp0_val = 0xFFFFFFFF;   /* match value 0  */
+  cfg0.comp1_val = 0xFFFFFFFF; /* match value 1 */
+  cfg0.comp2_val = 0xFFFFFFFF; /* match value 2 */
   cfg0.preload_val = 0;     /* preload value */
 
   timer0 = bflb_device_get_by_name("timer0");
   bflb_timer_init(timer0, &cfg0);
 
+  struct bflb_timer_capture_config_s timer0_tp_config;
+  timer0_tp_config.pin = PPM_RECV;
+  timer0_tp_config.polarity = TIMER_CAPTURE_POLARITY_NEGATIVE;// low level capture
+  bflb_timer_capture_init(timer0, &timer0_tp_config);
+
   bflb_timer_start(timer0);
 
   return RT_EOK;
+}
+
+static rt_err_t sbus_lowlevel_init(void)
+{
+    /* config uart0 */
+    gpio = bflb_device_get_by_name("gpio");
+    // bflb_gpio_uart_init(gpio, GPIO_PIN_21, GPIO_UART_FUNC_UART0_TX);
+    bflb_gpio_uart_init(gpio, GPIO_PIN_22, GPIO_UART_FUNC_UART0_RX);
+
+    sbus_uart = bflb_device_get_by_name("uart0");
+
+    /* 100000bps, even parity, two stop bits, sbus special configure */
+    struct bflb_uart_config_s cfg;
+    cfg.baudrate = 100000;
+    cfg.data_bits = UART_DATA_BITS_8;
+    cfg.stop_bits = UART_STOP_BITS_2;
+    cfg.parity = UART_PARITY_EVEN;
+    cfg.flow_ctrl = 0;
+    // cfg.tx_fifo_threshold = 7;
+    cfg.rx_fifo_threshold = 0;
+    bflb_uart_init(sbus_uart, &cfg);
+
+    // bflb_uart_txint_mask(sbus_uart, false);
+    bflb_uart_rxint_mask(sbus_uart, false);
+    bflb_irq_attach(sbus_uart->irq_num, uart_isr, NULL);
+    // bflb_irq_set_priority(sbus_uart->irq_num, 1, 1);
+    bflb_irq_enable(sbus_uart->irq_num);
+
+    return RT_EOK;
 }
 
 static rt_err_t rc_control(rc_dev_t rc, int cmd, void *arg) {
@@ -97,7 +167,13 @@ static rt_err_t rc_control(rc_dev_t rc, int cmd, void *arg) {
   case RC_CMD_CHECK_UPDATE: {
     uint8_t updated = 0;
 
-    updated = ppm_data_ready(&ppm_decoder);
+    //  if (rc->config.protocol == RC_PROTOCOL_SBUS) {
+    //         updated = sbus_data_ready(&sbus_decoder);
+    //     } else if (rc->config.protocol == RC_PROTOCOL_PPM) {
+    //         updated = ppm_data_ready(&ppm_decoder);
+    //     }
+
+    updated = sbus_data_ready(&sbus_decoder);
 
     *(uint8_t *)arg = updated;
   } break;
@@ -114,23 +190,59 @@ static rt_uint16_t rc_read(rc_dev_t rc, rt_uint16_t chan_mask,
   uint16_t *index = chan_val;
   rt_uint16_t rb = 0;
 
-  if (ppm_data_ready(&ppm_decoder) == 0) {
-    /* no data received, just return */
-    return 0;
-  }
+    //     if (rc->config.protocol == RC_PROTOCOL_SBUS) {
+    //     if (sbus_data_ready(&sbus_decoder) == 0) {
+    //         /* no data received, just return */
+    //         return 0;
+    //     }
 
-  ppm_lock(&ppm_decoder);
+    //     sbus_lock(&sbus_decoder);
 
-  for (uint8_t i = 0; i < min(rc->config.channel_num, ppm_decoder.total_chan);
-       i++) {
-    if (chan_mask & (1 << i)) {
-      *(index++) = ppm_decoder.ppm_val[i];
-      rb += 2;
-    }
-  }
-  ppm_data_clear(&ppm_decoder);
+    //     for (uint8_t i = 0; i < min(rc->config.channel_num, sbus_decoder.rc_count); i++) {
+    //         *(index++) = sbus_decoder.sbus_val[i];
+    //         rt_kprintf("\nsbus_decoder.sbus_val[%d] = %d",i, sbus_decoder.sbus_val[i]);
+    //         rb += 2;
+    //     }
+        
+    //     sbus_data_clear(&sbus_decoder);
 
-  ppm_unlock(&ppm_decoder);
+    //     sbus_unlock(&sbus_decoder);
+    // } else if (rc->config.protocol == RC_PROTOCOL_PPM) {
+    //     if (ppm_data_ready(&ppm_decoder) == 0) {
+    //         /* no data received, just return */
+    //         return 0;
+    //     }
+
+    //     ppm_lock(&ppm_decoder);
+
+    //     for (uint8_t i = 0; i < min(rc->config.channel_num, ppm_decoder.total_chan); i++) {
+    //         if (chan_mask & (1 << i)) {
+    //             *(index++) = ppm_decoder.ppm_val[i];
+    //             rb += 2;
+    //         }
+    //     }
+    //     ppm_data_clear(&ppm_decoder);
+
+    //     ppm_unlock(&ppm_decoder);
+    // }
+
+    if (sbus_data_ready(&sbus_decoder) == 0) {
+            /* no data received, just return */
+            return 0;
+        }
+
+        sbus_lock(&sbus_decoder);
+
+        for (uint8_t i = 0; i < min(rc->config.channel_num, sbus_decoder.rc_count); i++) {
+            *(index++) = sbus_decoder.sbus_val[i];
+            rt_kprintf("\nsbus_decoder.sbus_val[%d] = %d",i, sbus_decoder.sbus_val[i]);
+            rb += 2;
+        }
+        
+        sbus_data_clear(&sbus_decoder);
+
+        sbus_unlock(&sbus_decoder);
+    
 
   return rb;
 }
@@ -148,9 +260,12 @@ static struct rc_device rc_dev = {
 
 rt_err_t drv_rc_init(void) {
   /* init ppm driver */
-  RT_TRY(ppm_lowlevel_init());
-  /* init ppm decoder */
-  RT_TRY(ppm_decoder_init(&ppm_decoder, PPM_DECODER_FREQUENCY));
+  // RT_TRY(ppm_lowlevel_init());
+  // /* init ppm decoder */
+  // RT_TRY(ppm_decoder_init(&ppm_decoder, PPM_DECODER_FREQUENCY));
+
+  RT_TRY(sbus_lowlevel_init());
+  RT_TRY(sbus_decoder_init(&sbus_decoder));
 
   RT_CHECK(hal_rc_register(&rc_dev, "rc", RT_DEVICE_FLAG_RDWR, NULL));
 

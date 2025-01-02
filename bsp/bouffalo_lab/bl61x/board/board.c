@@ -334,7 +334,7 @@ void bsp_initialize(void) {
   RT_CHECK(drv_bmi088_init("spi0_dev1", "spi0_dev0", "gyro0", "accel0", 0));
   RT_CHECK(drv_bmm150_init("spi0_dev2", "mag0"));
   RT_CHECK(drv_spl06_init("spi0_dev3", "barometer"));
-  RT_CHECK(gps_ubx_init("serial1", "gps"));
+  // RT_CHECK(gps_ubx_init("serial1", "gps"));
 
   /* register sensor to sensor hub */
   FMT_CHECK(register_sensor_imu("gyro0", "accel0", 0));
