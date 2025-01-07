@@ -20,6 +20,7 @@
 
 #include "bflb_gpio.h"
 #include "bflb_timer.h"
+#include "bflb_dma.h"
 #include "bflb_uart.h"
 #include "hal/rc/ppm.h"
 #include "hal/rc/sbus.h"
@@ -53,6 +54,9 @@ struct bflb_device_s *gpio;
 
 static sbus_decoder_t sbus_decoder;
 struct bflb_device_s *sbus_uart;
+struct bflb_device_s *dma_uart0_rx;
+
+static ATTR_NOCACHE_NOINIT_RAM_SECTION uint8_t sbus_receive_buffer[25] = { 0 };
 
 void gpio_isr(int irq, void *arg) {
 
@@ -69,30 +73,17 @@ void gpio_isr(int irq, void *arg) {
   rt_interrupt_leave();
 }
 
+void dma_uart0_rx_isr(void *arg)
+{ 
+    /* check frame format */
+    if((sbus_receive_buffer[0] == 0x0F) && (sbus_receive_buffer[24] == 0x00)) {
 
-void uart_isr(int irq, void *arg)
-{
-    uint8_t ch;
-    /* enter interrupt */
-    rt_interrupt_enter();
-
-    uint32_t intstatus = bflb_uart_get_intstatus(sbus_uart);
-
-    if (intstatus & UART_INTSTS_RX_FIFO) {
-        while (bflb_uart_rxavailable(sbus_uart)) {
-            ch = bflb_uart_getchar(sbus_uart);
-            sbus_input(&sbus_decoder, &ch, 1);
-        }
+        sbus_input(&sbus_decoder, sbus_receive_buffer, 25);
 
         if (!sbus_islock(&sbus_decoder)) {
             sbus_update(&sbus_decoder);
         }
-
-        bflb_uart_int_clear(sbus_uart, UART_INTSTS_RX_FIFO);
-    }
-
-    /* leave interrupt */
-    rt_interrupt_leave();
+    } 
 }
 
 //定时器用于记录中断触发的时间戳，配置输入捕获通道用于触发中断
@@ -137,7 +128,6 @@ static rt_err_t sbus_lowlevel_init(void)
 {
     /* config uart0 */
     gpio = bflb_device_get_by_name("gpio");
-    // bflb_gpio_uart_init(gpio, GPIO_PIN_21, GPIO_UART_FUNC_UART0_TX);
     bflb_gpio_uart_init(gpio, GPIO_PIN_22, GPIO_UART_FUNC_UART0_RX);
 
     sbus_uart = bflb_device_get_by_name("uart0");
@@ -149,15 +139,37 @@ static rt_err_t sbus_lowlevel_init(void)
     cfg.stop_bits = UART_STOP_BITS_2;
     cfg.parity = UART_PARITY_EVEN;
     cfg.flow_ctrl = 0;
-    // cfg.tx_fifo_threshold = 7;
-    cfg.rx_fifo_threshold = 0;
+    cfg.rx_fifo_threshold = 24;
     bflb_uart_init(sbus_uart, &cfg);
+    bflb_uart_link_rxdma(sbus_uart, true);
 
-    // bflb_uart_txint_mask(sbus_uart, false);
-    bflb_uart_rxint_mask(sbus_uart, false);
-    bflb_irq_attach(sbus_uart->irq_num, uart_isr, NULL);
-    // bflb_irq_set_priority(sbus_uart->irq_num, 1, 1);
-    bflb_irq_enable(sbus_uart->irq_num);
+    /* config DMA uart0 rx */
+    dma_uart0_rx = bflb_device_get_by_name("dma0_ch0");
+
+    struct bflb_dma_channel_config_s rxconfig;
+    rxconfig.direction = DMA_PERIPH_TO_MEMORY;
+    rxconfig.src_req = DMA_REQUEST_UART0_RX;
+    rxconfig.dst_req = DMA_REQUEST_NONE;
+    rxconfig.src_addr_inc = DMA_ADDR_INCREMENT_DISABLE;
+    rxconfig.dst_addr_inc = DMA_ADDR_INCREMENT_ENABLE;
+    rxconfig.src_burst_count = DMA_BURST_INCR1;
+    rxconfig.dst_burst_count = DMA_BURST_INCR1;
+    rxconfig.src_width = DMA_DATA_WIDTH_8BIT;
+    rxconfig.dst_width = DMA_DATA_WIDTH_8BIT;
+
+    bflb_dma_channel_init(dma_uart0_rx, &rxconfig);
+    bflb_dma_channel_irq_attach(dma_uart0_rx, dma_uart0_rx_isr, NULL);
+
+    struct bflb_dma_channel_lli_pool_s rx_llipool[20];
+    struct bflb_dma_channel_lli_transfer_s rx_transfers[1];
+
+    rx_transfers[0].src_addr = (uint32_t)DMA_ADDR_UART0_RDR;
+    rx_transfers[0].dst_addr = (uint32_t)sbus_receive_buffer;
+    rx_transfers[0].nbytes = 25;
+
+    int used_count = bflb_dma_channel_lli_reload(dma_uart0_rx, rx_llipool, 20, rx_transfers, 1);
+    bflb_dma_channel_lli_link_head(dma_uart0_rx, rx_llipool, used_count);
+    bflb_dma_channel_start(dma_uart0_rx);
 
     return RT_EOK;
 }
@@ -165,17 +177,15 @@ static rt_err_t sbus_lowlevel_init(void)
 static rt_err_t rc_control(rc_dev_t rc, int cmd, void *arg) {
   switch (cmd) {
   case RC_CMD_CHECK_UPDATE: {
-    uint8_t updated = 0;
+      uint8_t updated = 0;
 
-    //  if (rc->config.protocol == RC_PROTOCOL_SBUS) {
-    //         updated = sbus_data_ready(&sbus_decoder);
-    //     } else if (rc->config.protocol == RC_PROTOCOL_PPM) {
-    //         updated = ppm_data_ready(&ppm_decoder);
-    //     }
+      if (rc->config.protocol == RC_PROTOCOL_SBUS) {
+          updated = sbus_data_ready(&sbus_decoder);
+      } else if (rc->config.protocol == RC_PROTOCOL_PPM) {
+          updated = ppm_data_ready(&ppm_decoder);
+      }
 
-    updated = sbus_data_ready(&sbus_decoder);
-
-    *(uint8_t *)arg = updated;
+      *(uint8_t *)arg = updated;
   } break;
 
   default:
@@ -190,43 +200,8 @@ static rt_uint16_t rc_read(rc_dev_t rc, rt_uint16_t chan_mask,
   uint16_t *index = chan_val;
   rt_uint16_t rb = 0;
 
-    //     if (rc->config.protocol == RC_PROTOCOL_SBUS) {
-    //     if (sbus_data_ready(&sbus_decoder) == 0) {
-    //         /* no data received, just return */
-    //         return 0;
-    //     }
-
-    //     sbus_lock(&sbus_decoder);
-
-    //     for (uint8_t i = 0; i < min(rc->config.channel_num, sbus_decoder.rc_count); i++) {
-    //         *(index++) = sbus_decoder.sbus_val[i];
-    //         rt_kprintf("\nsbus_decoder.sbus_val[%d] = %d",i, sbus_decoder.sbus_val[i]);
-    //         rb += 2;
-    //     }
-        
-    //     sbus_data_clear(&sbus_decoder);
-
-    //     sbus_unlock(&sbus_decoder);
-    // } else if (rc->config.protocol == RC_PROTOCOL_PPM) {
-    //     if (ppm_data_ready(&ppm_decoder) == 0) {
-    //         /* no data received, just return */
-    //         return 0;
-    //     }
-
-    //     ppm_lock(&ppm_decoder);
-
-    //     for (uint8_t i = 0; i < min(rc->config.channel_num, ppm_decoder.total_chan); i++) {
-    //         if (chan_mask & (1 << i)) {
-    //             *(index++) = ppm_decoder.ppm_val[i];
-    //             rb += 2;
-    //         }
-    //     }
-    //     ppm_data_clear(&ppm_decoder);
-
-    //     ppm_unlock(&ppm_decoder);
-    // }
-
-    if (sbus_data_ready(&sbus_decoder) == 0) {
+    if (rc->config.protocol == RC_PROTOCOL_SBUS) {
+        if (sbus_data_ready(&sbus_decoder) == 0) {
             /* no data received, just return */
             return 0;
         }
@@ -235,14 +210,30 @@ static rt_uint16_t rc_read(rc_dev_t rc, rt_uint16_t chan_mask,
 
         for (uint8_t i = 0; i < min(rc->config.channel_num, sbus_decoder.rc_count); i++) {
             *(index++) = sbus_decoder.sbus_val[i];
-            rt_kprintf("\nsbus_decoder.sbus_val[%d] = %d",i, sbus_decoder.sbus_val[i]);
             rb += 2;
         }
         
         sbus_data_clear(&sbus_decoder);
 
         sbus_unlock(&sbus_decoder);
-    
+    } else if (rc->config.protocol == RC_PROTOCOL_PPM) {
+        if (ppm_data_ready(&ppm_decoder) == 0) {
+            /* no data received, just return */
+            return 0;
+        }
+
+        ppm_lock(&ppm_decoder);
+
+        for (uint8_t i = 0; i < min(rc->config.channel_num, ppm_decoder.total_chan); i++) {
+            if (chan_mask & (1 << i)) {
+                *(index++) = ppm_decoder.ppm_val[i];
+                rb += 2;
+            }
+        }
+        ppm_data_clear(&ppm_decoder);
+
+        ppm_unlock(&ppm_decoder);
+    }
 
   return rb;
 }
@@ -260,9 +251,9 @@ static struct rc_device rc_dev = {
 
 rt_err_t drv_rc_init(void) {
   /* init ppm driver */
-  // RT_TRY(ppm_lowlevel_init());
-  // /* init ppm decoder */
-  // RT_TRY(ppm_decoder_init(&ppm_decoder, PPM_DECODER_FREQUENCY));
+  RT_TRY(ppm_lowlevel_init());
+  /* init ppm decoder */
+  RT_TRY(ppm_decoder_init(&ppm_decoder, PPM_DECODER_FREQUENCY));
 
   RT_TRY(sbus_lowlevel_init());
   RT_TRY(sbus_decoder_init(&sbus_decoder));
